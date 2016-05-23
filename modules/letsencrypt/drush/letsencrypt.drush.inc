@@ -2,10 +2,7 @@
 
 /**
  * @file
- *   A letsencrypt service for the Provision API.
- *
- *  Declares a new service type and a 'selfsigned' implementation of it. It
- *  matches the same service definition in the hosting front end.
+ *   A Letsencrypt implementation of the Certificate service for the Provision API.
  */
 
 /**
@@ -27,17 +24,8 @@ function letsencrypt_provision_register_autoload() {
 }
 
 /**
- * Expose the service type this extension defines to provision.
- *
- * Implementations are then conditionally loaded when the option 
- * "--$service_service_type=$type" is passed to the provision-save
- * command of a server.
- *
- * Implementations are automatically loaded from :
- * provision/$service/$type/$type_service.inc.
- *
- * @return
- *   An array with the service type as key, and the default implementation as value.
+ * Ensure our classes are loaded early enough to instantiate the Provision
+ * services.
  */
 function letsencrypt_provision_services() {
   letsencrypt_provision_register_autoload();

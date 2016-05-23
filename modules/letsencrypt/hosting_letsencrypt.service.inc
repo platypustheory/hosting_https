@@ -15,6 +15,8 @@ class hostingService_Certificate_Letsencrypt extends hostingService_Certificate 
    */
   public $type = 'Certificate';
 
+  protected $certificate_field = 'default';
+
   /**
    * node operations
    */
@@ -26,7 +28,7 @@ class hostingService_Certificate_Letsencrypt extends hostingService_Certificate 
    */
   function load() {
     parent::load();
-    $this->certificate_field = variable_get('hosting_certificate_field_' . $this->server->nid, 'default value');
+    $this->certificate_field = variable_get('hosting_certificate_field_' . $this->server->nid, $this->certificate_field);
 
     /**
      * Although this certificate does not have it's own tables, we provide some utitilty functions
@@ -77,7 +79,7 @@ class hostingService_Certificate_Letsencrypt extends hostingService_Certificate 
       '#title' => t('Certificate field'),
       '#description' => t('An certificate field for the user to fill in.'),
       '#size' => 40,
-      '#default_value' => ($this->certificate_field) ? $this->certificate_field : 'default value',
+      '#default_value' => $this->certificate_field,
       '#maxlength' => 64,
       '#weight' => 5,
     );

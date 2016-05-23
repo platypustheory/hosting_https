@@ -4,6 +4,7 @@
  *   A Letsencrypt implementation of the Certificate service type.
  */
 class Provision_Service_Certificate_Letsencrypt extends Provision_Service_Certificate {
+  public $service = 'Letsencrypt';
 
   /**
    * Initialize this class, including option handling.

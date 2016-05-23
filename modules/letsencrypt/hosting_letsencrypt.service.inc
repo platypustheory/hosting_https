@@ -88,8 +88,8 @@ class hostingService_Certificate_Letsencrypt extends hostingService_Certificate 
   /**
    * Validate a form submission.
    */
-  function validate(&$node, &$form) {
-    parent::validate($node, $form);
+  function validate(&$node, &$form, &$form_state) {
+    parent::validate($node, $form, $form_state);
 
     if (sizeof($this->certificate_field) > 30) {
       form_set_error('certificate_field', t("The certificate string must not be longer than 30 characters"));

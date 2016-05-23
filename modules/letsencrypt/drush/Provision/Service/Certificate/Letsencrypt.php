@@ -25,7 +25,8 @@ class Provision_Service_Certificate_Letsencrypt extends Provision_Service_Certif
     /**
      * Non configurable values.
      */
-    $this->server->letsencrypt_config_path = $this->server->config_path . '/letsencrypt.d';
+    $this->server->letsencrypt_config_path = $this->server->aegir_root . '/config/letsencrypt.d';
+    $this->server->letsencrypt_script_path = $this->server->aegir_root . '/config/letsencrypt';
   }
 
 
@@ -55,14 +56,17 @@ class Provision_Service_Certificate_Letsencrypt extends Provision_Service_Certif
 
   /**
    * Implementation of service verify.
+   *
+   * Called from drush_letsencrypt_provision_verify().
    */
   function verify() {
-    parent::verify();
     if ($this->context->type == 'server') {
       // Create the configuration file directory.
-      provision_file()->create_dir($this->server->letsencrypt_config_path, dt("Letsencrypt configuration"), 0700);
+      provision_file()->create_dir($this->server->letsencrypt_config_path, dt("Create Letsencrypt configuration directory."), 0700);
+      // Create the script file directory.
+      provision_file()->create_dir($this->server->letsencrypt_script_path, dt("Create Letsencrypt script directory."), 0700);
       // Sync the directory to the remote server if needed.
-      $this->sync($this->server->letsencrypt_config_path);
+    #  $this->sync($this->server->letsencrypt_config_path);
     }
   }
 }

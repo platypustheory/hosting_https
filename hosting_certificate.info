@@ -1,0 +1,8 @@
+name = Hosting Certificate Service
+description = A service to generate SSL certificates for Aegir-hosted sites.
+package = Hosting Certificate
+dependencies[] = hosting
+
+core = 7.x
+
+files[] = hosting_certificate.service.inc

@@ -16,7 +16,7 @@
  * If the service implemented doesn't define this method, or
  * no implementation has been selected, nothing will happen.
  */
-function drush_certificate_provision_install() {
+function drush_letsencrypt_provision_install() {
   // only run this code on site objects.
   if (d()->type == 'site') {
 
@@ -30,15 +30,15 @@ function drush_certificate_provision_install() {
      * the 'service' method with the service type you want
      * to call as its only argument.
      */
-    d()->service('certificate')->create_config('site');
+    d()->service('letsencrypt')->create_config('site');
   }
 }
 
 /**
  * Implements drush_hook_provision_install_rollback().
  */
-function drush_certificate_provision_install_rollback() {
-  d()->service('certificate')->delete_config('site'); 
+function drush_letsencrypt_provision_install_rollback() {
+  d()->service('letsencrypt')->delete_config('site'); 
 }
 
 /**
@@ -47,6 +47,6 @@ function drush_certificate_provision_install_rollback() {
  * We can now perform such operations as restarting the server,
  * by calling the public API of the service we have created.
  */
-function drush_certificate_post_provision_install() {
-  d()->service('certificate')->parse_configs();
+function drush_letsencrypt_post_provision_install() {
+  d()->service('letsencrypt')->parse_configs();
 }

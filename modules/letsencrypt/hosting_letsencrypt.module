@@ -1,0 +1,38 @@
+<?php
+
+/**
+ * @file
+ * Letsencrypt SSL certificate generation service.
+ */
+
+/**
+ * Expose a service implementation to the service API.
+ *
+ * @return
+ *   An associative array with the service implementation as key, and the
+ *   service type implemented as value.
+ *
+ * @see hosting_server_services()
+ */
+function hosting_letsencrypt_hosting_service() {
+  return array('Letsencrypt' => 'Certificate');
+}
+
+/**
+ * Callback function to execute on enabling this module's feature.
+ *
+ * @see: hosting_letsencrypt_hosting_feature().
+ */
+function hosting_letsencrypt_feature_enable_callback() {
+  drupal_set_message(t("The 'letsencrypt' feature's <strong>enable</strong> callback was just called."));
+}
+
+/**
+ * Callback function to execute on enabling this module's feature.
+ *
+ * @see: hosting_letsencrypt_hosting_feature().
+ */
+function hosting_letsencrypt_feature_disable_callback() {
+  drupal_set_message(t("The 'letsencrypt' feature's <strong>disable</strong> callback was just called."));
+}
+

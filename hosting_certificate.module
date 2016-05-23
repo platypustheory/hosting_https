@@ -20,7 +20,7 @@
  */
 function hosting_certificate_hosting_service_type() {
   return array(
-    'certificate' => array(
+    'Certificate' => array(
       'title' => t('Certificate service'),
       'weight' => 0,
     ),
@@ -36,9 +36,9 @@ function hosting_certificate_hosting_service_type() {
  *
  * @see hosting_server_services()
  */
-function hosting_certificate_hosting_service() {
-  return array('selfsigned' => 'certificate'); // Service implementation => service type.
-}
+#function hosting_certificate_hosting_service() {
+#  return array('selfsigned' => 'certificate'); // Service implementation => service type.
+#}
 
 /**
  * Callback function to execute on enabling this module's feature.

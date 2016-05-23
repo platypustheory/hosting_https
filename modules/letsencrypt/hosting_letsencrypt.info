@@ -1,0 +1,9 @@
+name = Hosting Letsencrypt Service
+description = A service to generate SSL letsencrypts for Aegir-hosted sites.
+package = Hosting Certificate
+dependencies[] = hosting
+dependencies[] = hosting_certificate
+
+core = 7.x
+
+files[] = hosting_letsencrypt.service.inc

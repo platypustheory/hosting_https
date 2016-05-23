@@ -6,13 +6,7 @@
  */
 
 /**
- * Expose a service implementation to the service API.
- *
- * @return
- *   An associative array with the service implementation as key, and the
- *   service type implemented as value.
- *
- * @see hosting_server_services()
+ * Implements hook_hosting_service().
  */
 function hosting_letsencrypt_hosting_service() {
   return array('Letsencrypt' => 'Certificate');

@@ -2,33 +2,12 @@
 
 /**
  * The service type base class.
- *
- * All implementations of the service type will inherit this class.
- * This class should define the 'public API' to be used by the rest
- * of the system, which should not expose implementation details.
  */
 class Provision_Service_Certificate extends Provision_Service {
   public $service = 'Certificate';
 
   /**
-   * Initialize the service along with the server object.
-   */
-  function init() {
-    parent::init();
-
-    /**
-     * We do not need to use this in our certificate.
-     *
-     * You would extend this if you needed to save values
-     * for all possible implementations of this service type.
-     */
-  }
-
-  /**
    * Called on provision-verify.
-   *
-   * We change what we will do based on what the 
-   * type of object the command is being run against.
    */
   function verify() {
     $this->create_config(d()->type);

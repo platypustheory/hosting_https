@@ -44,9 +44,6 @@ class hostingService_Certificate_Letsencrypt extends hostingService_Certificate 
   /**
    * Display settings on the server node page.
    *
-   * Modify the reference passed to the method to add additional implementation
-   * specific fields to be displayed.
-   *
    * @param
    *   A reference to the associative array of the subsection of the page
    *   reserved for this service implementation.
@@ -63,9 +60,6 @@ class hostingService_Certificate_Letsencrypt extends hostingService_Certificate 
 
   /**
    * Extend the server node form.
-   *
-   * Modify the reference passed to the method to add additional implementation
-   * specific fields to be stored and managed.
    *
    * @param
    *   A reference to the associative array of the subsection of the form
@@ -98,15 +92,6 @@ class hostingService_Certificate_Letsencrypt extends hostingService_Certificate 
 
   /**
    * Insert a record into the database.
-   *
-   * Called by hosting_server_hook_insert().
-   *
-   * The values associated with this implementation have already
-   * been set as properties of $this object, so we now need to
-   * save them.
-   *
-   * For this certificate we will use the variables table, but you should
-   * create your own tables with an install file and hook_schema.
    */
   function insert() {
     parent::insert();
@@ -116,11 +101,6 @@ class hostingService_Certificate_Letsencrypt extends hostingService_Certificate 
 
   /**
    * Update a record in the database.
-   *
-   * Called by hosting_server_hook_update().
-   *
-   * For this certificate we will use the variables table, but you should
-   * create your own tables with an install file and hook_schema.
    */
   function update() {
     parent::update();
@@ -138,9 +118,7 @@ class hostingService_Certificate_Letsencrypt extends hostingService_Certificate 
   }
 
   /**
-   * Delete a specific reivision from the database.
-   *
-   * Not relevant in our certificate but shown anyway.
+   * Delete a specific revision from the database.
    */
   function delete_revision() {
     parent::delete_revision();
@@ -148,14 +126,6 @@ class hostingService_Certificate_Letsencrypt extends hostingService_Certificate 
 
   /**
    * Pass values to the provision backend when we call provision-save.
-   *
-   * By selecting this type we already pass the '--certificate_service_type=letsencrypt' option
-   * to the command, which will load the matching provisionService class in the backend.
-   *
-   * This backend class will be responsible for receiving and reacting to the options
-   * passed here.
-   *
-   * @ingroup backend-frontend-IPC
    */
   public function context_options($task_type, $ref_type, &$task) {
     parent::context_options($task_type, $ref_type, $task);
@@ -163,7 +133,3 @@ class hostingService_Certificate_Letsencrypt extends hostingService_Certificate 
     $task->context_options['certificate_field'] = $this->certificate_field;
   }
 }
-
-/**
- * @} End of "addtogroup hostingserviceapi".
- */

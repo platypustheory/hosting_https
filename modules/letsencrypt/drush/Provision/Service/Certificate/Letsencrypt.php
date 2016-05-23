@@ -62,9 +62,12 @@ class Provision_Service_Certificate_Letsencrypt extends Provision_Service_Certif
   function verify() {
     if ($this->context->type == 'server') {
       // Create the configuration file directory.
-      provision_file()->create_dir($this->server->letsencrypt_config_path, dt("Create Letsencrypt configuration directory."), 0700);
-      // Create the script file directory.
-      provision_file()->create_dir($this->server->letsencrypt_script_path, dt("Create Letsencrypt script directory."), 0700);
+      provision_file()->create_dir($this->server->letsencrypt_config_path, dt("Letsencrypt configuration directory"), 0700);
+      // Copy the script directory into place.
+      $source = dirname(dirname(dirname(dirname(__FILE__)))) . '/bin/';
+      if (drush_copy_dir($source, $this->server->letsencrypt_script_path, FILE_EXISTS_OVERWRITE)) {
+        drush_log("Copied Letsencrypt script directory into place.", 'success');
+      }
       // Sync the directory to the remote server if needed.
     #  $this->sync($this->server->letsencrypt_config_path);
     }

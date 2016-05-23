@@ -2,10 +2,7 @@
 
 /**
  * @file
- *   A certificate service for the Provision API.
- *
- *  Declares a new service type and a 'selfsigned' implementation of it. It
- *  matches the same service definition in the hosting front end.
+ *   A Certificate service type for the Provision API.
  */
 
 /**
@@ -28,13 +25,6 @@ function certificate_provision_register_autoload() {
 
 /**
  * Expose the service type this extension defines to provision.
- *
- * Implementations are then conditionally loaded when the option 
- * "--$service_service_type=$type" is passed to the provision-save
- * command of a server.
- *
- * Implementations are automatically loaded from :
- * provision/$service/$type/$type_service.inc.
  *
  * @return
  *   An array with the service type as key, and the default implementation as value.

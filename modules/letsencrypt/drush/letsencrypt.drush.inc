@@ -31,9 +31,3 @@ function letsencrypt_provision_services() {
   letsencrypt_provision_register_autoload();
 }
 
-/**
- * Implements drush_HOOK_COMMAND().
- */
-function drush_letsencrypt_provision_verify() {
-  d()->server->service('Certificate')->verify();
-}

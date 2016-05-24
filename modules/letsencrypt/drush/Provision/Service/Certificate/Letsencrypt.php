@@ -57,9 +57,10 @@ class Provision_Service_Certificate_Letsencrypt extends Provision_Service_Certif
   /**
    * Implementation of service verify.
    *
-   * Called from drush_letsencrypt_provision_verify().
+   * Called from drush_certificate_provision_verify().
    */
   function verify() {
+    parent::verify();
     if ($this->context->type == 'server') {
       // Create the configuration file directory.
       provision_file()->create_dir($this->server->letsencrypt_config_path, dt("Letsencrypt configuration directory"), 0700);

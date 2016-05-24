@@ -10,8 +10,8 @@ class Provision_Service_Certificate extends Provision_Service {
    * Called on provision-verify.
    */
   function verify() {
-    $this->create_config(d()->type);
-    $this->parse_configs();
+    #$this->create_config(d()->type);
+    #$this->parse_configs();
   }
 
   /**

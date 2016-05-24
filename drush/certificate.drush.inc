@@ -33,3 +33,11 @@ function certificate_provision_services() {
   certificate_provision_register_autoload();
   return array('Certificate' => NULL);
 }
+
+/**
+ * Implements drush_HOOK_COMMAND().
+ */
+function drush_certificate_provision_verify() {
+  d()->server->service('Certificate')->verify();
+}
+

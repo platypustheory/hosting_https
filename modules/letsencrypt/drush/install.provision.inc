@@ -30,7 +30,7 @@ function drush_letsencrypt_provision_install() {
      * the 'service' method with the service type you want
      * to call as its only argument.
      */
-    d()->service('letsencrypt')->create_config('site');
+    d()->service('Certificate')->create_config('site');
   }
 }
 
@@ -38,7 +38,7 @@ function drush_letsencrypt_provision_install() {
  * Implements drush_hook_provision_install_rollback().
  */
 function drush_letsencrypt_provision_install_rollback() {
-  d()->service('letsencrypt')->delete_config('site'); 
+  d()->service('Certificate')->delete_config('site');
 }
 
 /**
@@ -48,5 +48,5 @@ function drush_letsencrypt_provision_install_rollback() {
  * by calling the public API of the service we have created.
  */
 function drush_letsencrypt_post_provision_install() {
-  d()->service('letsencrypt')->parse_configs();
+  d()->service('Certificate')->parse_configs();
 }

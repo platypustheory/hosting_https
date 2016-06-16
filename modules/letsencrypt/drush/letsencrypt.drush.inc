@@ -24,6 +24,8 @@ function letsencrypt_provision_register_autoload() {
 }
 
 /**
+ * Implements hook_provision_services().
+ *
  * Ensure our classes are loaded early enough to instantiate the Provision
  * services.
  */

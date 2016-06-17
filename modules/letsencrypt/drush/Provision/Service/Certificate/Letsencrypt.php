@@ -75,5 +75,21 @@ class Provision_Service_Certificate_Letsencrypt extends Provision_Service_Certif
       // Sync the directory to the remote server if needed.
     #  $this->sync($this->server->letsencrypt_config_path);
     }
+    if ($this->context->type == 'site') {
+      $script_path = d()->server->letsencrypt_script_path;
+      $config_path = d()->server->letsencrypt_config_path;
+      $uri = d()->uri;
+      drush_log(dt("Generating Let's Encrypt certificates."));
+      $result = drush_shell_exec("{$script_path}/letsencrypt.sh -c -f {$script_path}/config.staging --out {$config_path} -d {$uri} -x");
+      foreach (drush_shell_exec_output() as $line) {
+        drush_log($line);
+      }
+      if ($result) {
+        drush_log(dt("Successfully generated Let's Encrypt certificates."), 'success');
+      }
+      else {
+        drush_log(dt("Failed to generate Let's Encrypt certificates."), 'warning');
+      }
+    }
   }
 }

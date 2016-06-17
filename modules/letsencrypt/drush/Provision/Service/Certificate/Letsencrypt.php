@@ -25,8 +25,9 @@ class Provision_Service_Certificate_Letsencrypt extends Provision_Service_Certif
     /**
      * Non configurable values.
      */
-    $this->server->letsencrypt_config_path = $this->server->aegir_root . '/config/letsencrypt.d';
     $this->server->letsencrypt_script_path = $this->server->aegir_root . '/config/letsencrypt';
+    $this->server->letsencrypt_config_path = $this->server->aegir_root . '/config/letsencrypt.d';
+    $this->server->letsencrypt_challenge_path = $this->server->aegir_root . '/config/letsencrypt.d/well-known/acme-challenge';
   }
 
 
@@ -63,11 +64,13 @@ class Provision_Service_Certificate_Letsencrypt extends Provision_Service_Certif
     parent::verify();
     if ($this->context->type == 'server') {
       // Create the configuration file directory.
-      provision_file()->create_dir($this->server->letsencrypt_config_path, dt("Letsencrypt configuration directory"), 0700);
+      provision_file()->create_dir($this->server->letsencrypt_config_path, dt("Let's Encrypt configuration directory"), 0711);
+      // Create the ACME challenge directory.
+      provision_file()->create_dir($this->server->letsencrypt_challenge_path, dt("Let's Encrypt ACME challenge directory"), 0711);
       // Copy the script directory into place.
       $source = dirname(dirname(dirname(dirname(__FILE__)))) . '/bin/';
       if (drush_copy_dir($source, $this->server->letsencrypt_script_path, FILE_EXISTS_OVERWRITE)) {
-        drush_log("Copied Letsencrypt script directory into place.", 'success');
+        drush_log("Copied Let's Encrypt script directory into place.", 'success');
       }
       // Sync the directory to the remote server if needed.
     #  $this->sync($this->server->letsencrypt_config_path);

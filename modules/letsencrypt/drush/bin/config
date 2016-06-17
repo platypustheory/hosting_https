@@ -1,1 +1,1 @@
-WELLKNOWN="/var/aegir/config/letsencrypt/well-known/acme-challenge"
+WELLKNOWN="/var/aegir/config/letsencrypt.d/well-known/acme-challenge"

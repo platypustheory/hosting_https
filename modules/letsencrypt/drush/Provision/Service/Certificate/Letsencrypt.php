@@ -90,6 +90,45 @@ class Provision_Service_Certificate_Letsencrypt extends Provision_Service_Certif
       else {
         drush_log(dt("Failed to generate Let's Encrypt certificates."), 'warning');
       }
+      $cert_dir = d()->server->http_ssld_path . '/' . d()->uri;
+      $cert_path = $cert_dir . '/openssl.crt';
+      $key_path = $cert_dir . '/openssl.key';
+      $targets = array(
+        'certificate' => "{$config_path}/{$uri}/cert.pem",
+        'key' => "{$config_path}/{$uri}/privkey.pem",
+      );
+      $paths = array(
+        'certificate' => $cert_path,
+        'key' => $key_path,
+      );
+      foreach ($paths as $type => $path) {
+        drush_log(dt("Moving existing :type out of the way.", array(
+          ':type' => $type,
+        )));
+        if (file_exists($path) && !is_link($path)) {
+          $new_path = $path . '.self-signed';
+          if (rename($path, $new_path)) {
+            drush_log(dt('Moved :path to :new_path.', array(
+              ':path' => $path,
+              ':new_path' => $new_path,
+            )));
+            drush_log(dt("Symlinking to Let's Encrypt :type.", array(
+              ':type' => $type,
+            )));
+            // TODO: Add tokens to ProvisionFileSystem object.
+            // Ref.: http://api.aegirproject.org/api/Provision/Provision%21FileSystem.php/class/Provision_FileSystem/7.x-3.x
+            provision_file()->symlink($targets[$type], $path)
+              ->succeed("Symlinked to Let's Encrypt " . $type)
+              ->fail("Failed to symlink to Let's Encrypt " . $type);
+          }
+          else {
+            drush_log(dt('Failed to move :path to :new_path.', array(
+              ':path' => $path,
+              ':new_path' => $new_path,
+            )));
+          }
+        }
+      }
     }
   }
 }

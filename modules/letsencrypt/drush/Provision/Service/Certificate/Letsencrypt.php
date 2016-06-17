@@ -75,7 +75,7 @@ class Provision_Service_Certificate_Letsencrypt extends Provision_Service_Certif
       // Sync the directory to the remote server if needed.
     #  $this->sync($this->server->letsencrypt_config_path);
     }
-    if ($this->context->type == 'site') {
+    if ($this->context->type == 'site' && $this->ssl_enabled > 0) {
       $script_path = d()->server->letsencrypt_script_path;
       $config_path = d()->server->letsencrypt_config_path;
       $uri = d()->uri;

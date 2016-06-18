@@ -77,6 +77,20 @@ function letsencrypt_provision_nginx_server_config($data) {
     alias {$challenge_path}
   }
 ";
+}
 
+/**
+ * Implements hook_provision_ssl_certs_alter().
+ */
+function letsencrypt_provision_ssl_certs_alter(&$certs, $name) {
+  $context = d();
+  if ($context->type == 'site' && $context->ssl_enabled > 0 && $context->server->Certificate_service_type == 'Letsencrypt') {
+    drush_log(dt("Overriding certificate and key locations for Let's Encrypt."));
+    $certs['ssl_cert'] = $context->server->letsencrypt_config_path . "/{$name}/cert.pem"; 
+    $certs['ssl_cert_key'] = $context->server->letsencrypt_config_path . "/{$name}/privkey.pem";
+    $certs['ssl_chain_cert'] = $context->server->letsencrypt_config_path . "/{$name}/fullchain.pem";
+    drush_print_r($certs);
+    drush_print_r($name);
+  }
 }
 

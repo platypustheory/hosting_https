@@ -1,15 +1,15 @@
 <?php
 /**
  * @file
- * Define the database schema and uninstall function for the hosting_ssl module.
+ * Define the database schema and uninstall function for the hosting_https module.
  *
  */
 
 /**
  * Implements hook_schema().
  */
-function hosting_ssl_schema() {
-  $schema['hosting_ssl_server'] = array(
+function hosting_https_schema() {
+  $schema['hosting_https_server'] = array(
     'fields' => array(
       'vid' => array(
         'type' => 'int',
@@ -33,7 +33,7 @@ function hosting_ssl_schema() {
     'primary key' => array('vid', 'nid'),
   );
 
-  $schema['hosting_ssl_cert'] = array(
+  $schema['hosting_https_cert'] = array(
     'fields' => array(
       'cid' => array(
         'type' => 'serial',
@@ -62,7 +62,7 @@ function hosting_ssl_schema() {
     'indexes' => array('ssl_key' => array(array('ssl_key', 50))),
   );
 
-  $schema['hosting_ssl_site'] = array(
+  $schema['hosting_https_site'] = array(
     'fields' => array(
       'vid' => array(
         'type' => 'int',
@@ -92,7 +92,7 @@ function hosting_ssl_schema() {
     'primary key' => array('vid', 'nid'),
   );
 
-  $schema['hosting_ssl_cert_ips'] = array(
+  $schema['hosting_https_cert_ips'] = array(
     'fields' => array(
       // cert id
       'cid' => array(
@@ -120,7 +120,7 @@ function hosting_ssl_schema() {
 /**
  * Remove SSL service records from hosting_service table.
  */
-function hosting_ssl_uninstall() {
+function hosting_https_uninstall() {
   db_delete('hosting_service')
     ->condition('service', 'http')
     ->condition('type', 'apache_ssl')

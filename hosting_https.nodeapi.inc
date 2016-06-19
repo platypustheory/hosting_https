@@ -12,7 +12,7 @@ define('HOSTING_SSL_CUSTOM_KEY', 'null');
 /**
  * Form API code to extend the site form with SSL fields.
  */
-function hosting_ssl_site_form(&$form, &$form_state, $form_id) {
+function hosting_https_site_form(&$form, &$form_state, $form_id) {
   $node = $form['#node'];
 
   $new_site = TRUE;
@@ -28,27 +28,27 @@ function hosting_ssl_site_form(&$form, &$form_state, $form_id) {
     }
   }
   
-  _hosting_site_field($form, $node, 'hosting_ssl_wrapper', array(
+  _hosting_site_field($form, $node, 'hosting_https_wrapper', array(
     '#type' => 'fieldset',
     '#title' => t('SSL Settings'),
     '#default_value' => NULL,
   ), 'filter_xss', $ssl_available);
 
-  _hosting_site_field($form['hosting_ssl_wrapper'], $node, 'ssl_enabled', array(
+  _hosting_site_field($form['hosting_https_wrapper'], $node, 'ssl_enabled', array(
     '#type' => 'radios',
     '#title' => t('Encryption'),
-    '#options' => hosting_ssl_status_options(),
+    '#options' => hosting_https_status_options(),
     '#description' => t('Enabling encryption will publish your site on both HTTP and HTTPS ports, allowing you to redirect users to the more secure version for certain pages that require the additional security. Requiring encryption will automatically redirect all unencrypted traffic to your HTTPS site.'),
     '#required' => TRUE,
     '#default_value' => (isset($node->ssl_enabled)) ? $node->ssl_enabled : HOSTING_SSL_DISABLED,
     '#access' => user_access('create ssl certificate'),
-  ), 'hosting_ssl_status_options', $ssl_available);
+  ), 'hosting_https_status_options', $ssl_available);
 
-  _hosting_site_field($form['hosting_ssl_wrapper'], $node, 'ssl_key', array(
+  _hosting_site_field($form['hosting_https_wrapper'], $node, 'ssl_key', array(
     '#type' => 'radios',
     '#title' => t('Encryption key'),
     '#description' => t("Choose an existing SSL certificate. If you do not wish to use any of your existing certificates, you may choose to generate a new one."),
-    '#options' => hosting_ssl_get_keys(NULL, TRUE),
+    '#options' => hosting_https_get_keys(NULL, TRUE),
     '#required' => TRUE,
     '#default_value' => (isset($node->ssl_key) && $node->ssl_key > 0) ? $node->ssl_key : HOSTING_SSL_CUSTOM_KEY,
     '#access' => user_access('create ssl certificate'),
@@ -57,9 +57,9 @@ function hosting_ssl_site_form(&$form, &$form_state, $form_id) {
         ':input[name="ssl_enabled"]' => array('!value' => 0),
       ),
     ),
-  ), 'hosting_ssl_output_key', $ssl_available, !$new_site);
+  ), 'hosting_https_output_key', $ssl_available, !$new_site);
 
-  _hosting_site_field($form['hosting_ssl_wrapper'], $node, 'ssl_key_new', array(
+  _hosting_site_field($form['hosting_https_wrapper'], $node, 'ssl_key_new', array(
     '#type' => 'textfield',
     '#title' => t('New encryption key'),
     '#description' => t("A name for the certificate, often relating to the domain name. This field should only contain lower case alpha-numeric and '_', '-' or '.' characters. If the SSL certificate is not found in config/ssl.d, Aegir will automatically generate a self-signed certificate for you. You can replace the generated with a properly signed version later. Any required intermediate certificates can be added in a file called config/ssl.d/&lt;name&gt;/openssl_chain.crt"),
@@ -77,9 +77,9 @@ function hosting_ssl_site_form(&$form, &$form_state, $form_id) {
 /**
  * Implemensts hook_hosting_site_options_alter
  */
-function hosting_ssl_hosting_site_options_alter(&$return, $node) {
+function hosting_https_hosting_site_options_alter(&$return, $node) {
   // Disable the ssl key fields by default.
-  if (!count(hosting_ssl_get_servers())) {
+  if (!count(hosting_https_get_servers())) {
     $return['ssl_enabled'] = FALSE;
   }
 
@@ -90,7 +90,7 @@ function hosting_ssl_hosting_site_options_alter(&$return, $node) {
   //if (isset($node->ssl_enabled)) {
   if (isset($node->ssl_enabled) && $node->ssl_enabled) {
 
-    $keys = hosting_ssl_get_keys($node->client, TRUE);
+    $keys = hosting_https_get_keys($node->client, TRUE);
     // Return the list of valid keys, including the special 'new key' option.
     $return['ssl_key'] = array_keys($keys);
 
@@ -102,15 +102,15 @@ function hosting_ssl_hosting_site_options_alter(&$return, $node) {
     // the user has chosen to enter a new key
     if ($node->ssl_key == HOSTING_SSL_CUSTOM_KEY) {
       // default the new key to the site's domain name, after filtering.
-      $default = hosting_ssl_filter_key($node->title);
+      $default = hosting_https_filter_key($node->title);
       $return['ssl_key_new'] = (!empty($default)) ? $default : TRUE;
     }
 
     // we need to ensure that the return value is properly indexed, otherwise it
     // gets interpreted as an object by jquery.
-    $return['profile'] = array_values(array_intersect($return['profile'], hosting_ssl_get_profiles()));
+    $return['profile'] = array_values(array_intersect($return['profile'], hosting_https_get_profiles()));
 
-    $return['platform'] = array_values(array_intersect($return['platform'], hosting_ssl_get_platforms()));
+    $return['platform'] = array_values(array_intersect($return['platform'], hosting_https_get_platforms()));
   }
 }
 
@@ -118,11 +118,11 @@ function hosting_ssl_hosting_site_options_alter(&$return, $node) {
 /**
  * Implements hook_nodeapi_TYPE_OP().
  */
-function hosting_ssl_nodeapi_site_view(&$node, $teaser = FALSE) {
+function hosting_https_nodeapi_site_view(&$node, $teaser = FALSE) {
   $node->content['info']['ssl_enabled'] = array(
     '#type' => 'item',
     '#title' => t('Encryption'),
-    '#markup' => hosting_ssl_status_options((isset($node->ssl_enabled)) ? $node->ssl_enabled : HOSTING_SSL_DISABLED),
+    '#markup' => hosting_https_status_options((isset($node->ssl_enabled)) ? $node->ssl_enabled : HOSTING_SSL_DISABLED),
     '#weight' => 6,
   );
 
@@ -130,8 +130,8 @@ function hosting_ssl_nodeapi_site_view(&$node, $teaser = FALSE) {
     $node->content['info']['ssl_key'] = array(
       '#type' => 'item',
       '#title' => t('Encryption key'),
-      '#markup' => hosting_ssl_output_key($node->ssl_key),
-      '#description' => hosting_ssl_get_key($node->ssl_key) ? t("This site is using SSL certificates located at %path.", array('%path' => sprintf("config/ssl.d/%s/", hosting_ssl_output_key($node->ssl_key)))) : t("(key deleted)"),
+      '#markup' => hosting_https_output_key($node->ssl_key),
+      '#description' => hosting_https_get_key($node->ssl_key) ? t("This site is using SSL certificates located at %path.", array('%path' => sprintf("config/ssl.d/%s/", hosting_https_output_key($node->ssl_key)))) : t("(key deleted)"),
       '#weight' => 7,
     );
   }
@@ -141,11 +141,11 @@ function hosting_ssl_nodeapi_site_view(&$node, $teaser = FALSE) {
  * @todo Please document this function.
  * @see http://drupal.org/node/1354
  */
-function hosting_ssl_get_key($cid) {
+function hosting_https_get_key($cid) {
   static $cache = array();
 
   if (!isset($cache[$cid])) {
-    $cache[$cid] = db_query("SELECT ssl_key FROM {hosting_ssl_cert} WHERE cid = :cid", array(':cid' => $cid))->fetchField();
+    $cache[$cid] = db_query("SELECT ssl_key FROM {hosting_https_cert} WHERE cid = :cid", array(':cid' => $cid))->fetchField();
   }
   return $cache[$cid];
 }
@@ -153,9 +153,9 @@ function hosting_ssl_get_key($cid) {
 /**
  * Get an Array of all IP's associated with an SSL certificate.
  */
-function hosting_ssl_get_ip($cid) {
+function hosting_https_get_ip($cid) {
   $result = db_query("SELECT h.name AS server_name, ips.ip_address
-                        FROM {hosting_ssl_cert_ips} cert
+                        FROM {hosting_https_cert_ips} cert
                   INNER JOIN {hosting_ip_addresses} ips
                           ON cert.ip_address = ips.id
                   INNER JOIN {hosting_context} h
@@ -173,14 +173,14 @@ function hosting_ssl_get_ip($cid) {
  * @todo Please document this function.
  * @see http://drupal.org/node/1354
  */
-function hosting_ssl_output_key($cid) {
-  return filter_xss(hosting_ssl_get_key($cid));
+function hosting_https_output_key($cid) {
+  return filter_xss(hosting_https_get_key($cid));
 }
 
 /**
  * Output filter for SSL enabled field.
  */
-function hosting_ssl_status_options($status = NULL) {
+function hosting_https_status_options($status = NULL) {
   $options = array(
     HOSTING_SSL_DISABLED => t('Disabled'),
     HOSTING_SSL_ENABLED => t('Enabled'),
@@ -200,14 +200,14 @@ function hosting_ssl_status_options($status = NULL) {
  *
  * Only lowercase alphanumeric- and '.', '_' or '-' characters are allowed for ssl keys.
  */
-function hosting_ssl_filter_key($key) {
+function hosting_https_filter_key($key) {
   return strtolower(preg_replace("/[^\w\.\-]/", "", $key));
 }
 
 /**
  * Implements hook_nodeapi_TYPE_OP().
  */
-function hosting_ssl_nodeapi_site_validate($node, &$form) {
+function hosting_https_nodeapi_site_validate($node, &$form) {
   if ($node->ssl_enabled) {
     // TODO: find a way to avoid calling this function multiple times in hook_validate
     $valid_options = hosting_site_available_options($node);
@@ -217,7 +217,7 @@ function hosting_ssl_nodeapi_site_validate($node, &$form) {
         form_set_error('ssl_key_new', t("The encryption key field is required to enable us to generate a new SSL certificate for your site."));
       }
       else {
-        $key = hosting_ssl_filter_key($node->ssl_key_new);
+        $key = hosting_https_filter_key($node->ssl_key_new);
 
         if (($node->ssl_key_new != $key) || !strlen($key)) {
           form_set_error('ssl_key_new', t("The encryption key field should only contain lower case alpha-numeric and '_', '-' or '.' characters."));
@@ -249,7 +249,7 @@ function hosting_ssl_nodeapi_site_validate($node, &$form) {
 /**
  * Implements hook_nodeapi_TYPE_OP().
  */
-function hosting_ssl_nodeapi_site_presave(&$node) {
+function hosting_https_nodeapi_site_presave(&$node) {
   if (!isset($node->ssl_key)) {
     $node->ssl_key = HOSTING_SSL_CUSTOM_KEY;
   }
@@ -257,14 +257,14 @@ function hosting_ssl_nodeapi_site_presave(&$node) {
     $node->ssl_enabled = HOSTING_SSL_DISABLED;
   }
   // This creates the SSL key for the site, if required.
-  $node->ssl_key = hosting_ssl_save_key($node);
+  $node->ssl_key = hosting_https_save_key($node);
 }
 
 /**
  * Implements hook_nodeapi_TYPE_OP().
  */
-function hosting_ssl_nodeapi_site_insert($node) {
-  $id = db_insert('hosting_ssl_site')
+function hosting_https_nodeapi_site_insert($node) {
+  $id = db_insert('hosting_https_site')
     ->fields(array(
       'vid' => $node->vid,
       'nid' => $node->nid,
@@ -277,18 +277,18 @@ function hosting_ssl_nodeapi_site_insert($node) {
 /**
  * Implements hook_nodeapi_TYPE_OP().
  */
-function hosting_ssl_nodeapi_site_update($node) {
+function hosting_https_nodeapi_site_update($node) {
   // check if an existing record is there
-  $result = db_query("SELECT ssl_enabled FROM {hosting_ssl_site} WHERE vid = :vid", array(':vid' => $node->vid));
+  $result = db_query("SELECT ssl_enabled FROM {hosting_https_site} WHERE vid = :vid", array(':vid' => $node->vid));
   if (!($obj = $result->fetch())) {
-    hosting_ssl_nodeapi_site_insert($node);
+    hosting_https_nodeapi_site_insert($node);
   }
   else {
     if ($node->site_status == HOSTING_SITE_DELETED || (!$node->ssl_enabled && $node->ssl_key != 0))  {
-      hosting_ssl_clean_keys($node);
+      hosting_https_clean_keys($node);
     }
 
-    db_update('hosting_ssl_site')
+    db_update('hosting_https_site')
       ->fields(array(
         'ssl_enabled' => $node->ssl_enabled,
         'ssl_key' => $node->ssl_key,
@@ -301,9 +301,9 @@ function hosting_ssl_nodeapi_site_update($node) {
 /**
  * Implements hook_node_load().
  */
-function hosting_ssl_node_load($nodes, $types) {
+function hosting_https_node_load($nodes, $types) {
   foreach ($nodes as $k => $node) {
-    $result = db_query("SELECT ssl_enabled, ssl_key FROM {hosting_ssl_site} WHERE vid = :vid",
+    $result = db_query("SELECT ssl_enabled, ssl_key FROM {hosting_https_site} WHERE vid = :vid",
       array(':vid' => $node->vid)
       )->fetchObject();
     if ($result) {
@@ -316,9 +316,9 @@ function hosting_ssl_node_load($nodes, $types) {
 /**
  * Implements hook_nodeapi_TYPE_OP().
  */
-function hosting_ssl_nodeapi_site_delete($node) {
-  hosting_ssl_clean_keys($node);
-  db_delete('hosting_ssl_site')
+function hosting_https_nodeapi_site_delete($node) {
+  hosting_https_clean_keys($node);
+  db_delete('hosting_https_site')
     ->condition('nid', $node->nid)
     ->execute();
 }
@@ -326,8 +326,8 @@ function hosting_ssl_nodeapi_site_delete($node) {
 /**
  * Implements hook_nodeapi_TYPE_OP().
  */
-function hosting_ssl_nodeapi_site_delete_revision($node) {
-  db_delete('hosting_ssl_site')
+function hosting_https_nodeapi_site_delete_revision($node) {
+  db_delete('hosting_https_site')
     ->condition('vid', $node->vid)
     ->execute();
 }
@@ -336,7 +336,7 @@ function hosting_ssl_nodeapi_site_delete_revision($node) {
 /**
  * Store the SSL Cert key in the database.
  */
-function hosting_ssl_save_key($node) {
+function hosting_https_save_key($node) {
   if (empty($node->ssl_enabled)) {
     return 0;
   }
@@ -345,13 +345,13 @@ function hosting_ssl_save_key($node) {
 
   if ($node->ssl_key == HOSTING_SSL_CUSTOM_KEY && !empty($node->ssl_key_new)) {
     $ssl_key = $node->ssl_key_new;
-    $result = db_query("SELECT * FROM {hosting_ssl_cert} WHERE ssl_key = :ssl_key", array(':ssl_key' => $ssl_key));
+    $result = db_query("SELECT * FROM {hosting_https_cert} WHERE ssl_key = :ssl_key", array(':ssl_key' => $ssl_key));
     if ($obj = $result->fetch()) {
       // update
       if ($node->client != NULL) {
         $obj->client = $client->nid;
       }
-      drupal_write_record("hosting_ssl_cert", $obj, 'cid');
+      drupal_write_record("hosting_https_cert", $obj, 'cid');
       $node->ssl_key = $obj->cid;
     }
     else {
@@ -360,7 +360,7 @@ function hosting_ssl_save_key($node) {
       $obj->ssl_key = $ssl_key;
       $obj->client = $client->nid;
       $obj->status = 0;
-      drupal_write_record("hosting_ssl_cert", $obj);
+      drupal_write_record("hosting_https_cert", $obj);
       if (!hosting_ip_allocate($obj, $node)) {
         form_set_error('ssl_key_new', t("Unable to allocate IP address for certificate, assuming SNI (Server Name Indication) will work (incompatible with Safari and IE on Windows XP, Android 2.2, etc)."));
       }
@@ -381,7 +381,7 @@ function hosting_ssl_save_key($node) {
  *
  * @return array
  */
-function hosting_ssl_get_keys($client = NULL, $ask_custom = FALSE) {
+function hosting_https_get_keys($client = NULL, $ask_custom = FALSE) {
   $keys = array();
 
   if ($ask_custom == TRUE) {
@@ -389,7 +389,7 @@ function hosting_ssl_get_keys($client = NULL, $ask_custom = FALSE) {
   }
 
   $args = array();
-  $query = "SELECT cid, ssl_key FROM {hosting_ssl_cert}";
+  $query = "SELECT cid, ssl_key FROM {hosting_https_cert}";
 
   if (!is_null($client)) {
     $client = hosting_get_client($client);
@@ -414,10 +414,10 @@ function hosting_ssl_get_keys($client = NULL, $ask_custom = FALSE) {
  *
  * This is designed to be ran on a site's delete task or the site node's deletion.
  */
-function hosting_ssl_clean_keys($node) {
+function hosting_https_clean_keys($node) {
   // Check if there are still sites using this site's certificate.
-  if (!db_query("SELECT * FROM {hosting_ssl_site} siteA
-                   INNER JOIN {hosting_ssl_site} siteB ON siteA.ssl_key = siteB.ssl_key
+  if (!db_query("SELECT * FROM {hosting_https_site} siteA
+                   INNER JOIN {hosting_https_site} siteB ON siteA.ssl_key = siteB.ssl_key
                    INNER JOIN {hosting_site} s ON s.nid = siteA.nid
                      WHERE siteA.nid <> siteB.nid
                        AND (
@@ -433,16 +433,16 @@ function hosting_ssl_clean_keys($node) {
                  ))->fetchField()) {
     // We need to fetch the ssl_key field from the DB because the object comes
     // from the node edit, so it's gone.
-    $ssl_key = db_query('SELECT ssl_key FROM {hosting_ssl_site} WHERE nid = :nid',
+    $ssl_key = db_query('SELECT ssl_key FROM {hosting_https_site} WHERE nid = :nid',
       array(
         ':nid' => $node->nid,
       )
     )->fetchField();
     drupal_set_message(t("cleaning up unused certificate %cert associated with site %site", array('%cert' => $ssl_key, '%site' => $node->nid)));
-    db_delete('hosting_ssl_cert')
+    db_delete('hosting_https_cert')
       ->condition('cid', $ssl_key)
       ->execute();
-    db_delete('hosting_ssl_cert_ips')
+    db_delete('hosting_https_cert_ips')
       ->condition('cid', $ssl_key)
       ->execute();
   }

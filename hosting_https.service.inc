@@ -8,13 +8,13 @@ class hostingService_http_ssl extends hostingService_http_public {
 
   function load() {
     parent::load();
-    $this->mergeData("SELECT ssl_port FROM {hosting_ssl_server} WHERE vid=:vid", array(':vid' => $this->server->vid));
+    $this->mergeData("SELECT ssl_port FROM {hosting_https_server} WHERE vid=:vid", array(':vid' => $this->server->vid));
     $this->ssl_enabled = TRUE;
   }
 
   function insert() {
     parent::insert();
-    $id = db_insert('hosting_ssl_server')
+    $id = db_insert('hosting_https_server')
       ->fields(array(
         'vid' => $this->server->vid,
         'nid' => $this->server->nid,
@@ -25,14 +25,14 @@ class hostingService_http_ssl extends hostingService_http_public {
 
   function delete() {
     parent::delete();
-    db_delete('hosting_ssl_server')
+    db_delete('hosting_https_server')
       ->condition('nid', $this->server->nid)
       ->execute();
   }
 
   function delete_revision() {
     parent::delete_revision();
-    db_delete('hosting_ssl_server')
+    db_delete('hosting_https_server')
       ->condition('vid', $this->server->vid)
       ->execute();
   }

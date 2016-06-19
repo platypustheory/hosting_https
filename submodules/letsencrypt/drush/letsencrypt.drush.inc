@@ -34,14 +34,14 @@ function letsencrypt_provision_services() {
 }
 
 /**
- * Implements drush_hook_provision_apache_server_config().
+ * Implements hook_provision_apache_server_config().
  *
  * @see https://github.com/lukas2511/letsencrypt.sh/blob/master/docs/wellknown.md
  */
 function letsencrypt_provision_apache_server_config($data) {
-  $challenge_path = d()->letsencrypt_challenge_path;
-  drush_log(dt("Injecting Let's Encrypt 'well-known' ACME challenge directory ':path' vhost entry.", array(':path' => $challenge_path)));
-  return "
+  if (d()->Certificate_service_type == 'Letsencrypt' && $challenge_path = d()->letsencrypt_challenge_path) {
+    drush_log(dt("Injecting Let's Encrypt 'well-known' ACME challenge directory ':path' vhost entry.", array(':path' => $challenge_path)));
+    return "
 Alias /.well-known/acme-challenge {$challenge_path}
 
 <Directory {$challenge_path}>
@@ -60,37 +60,24 @@ Alias /.well-known/acme-challenge {$challenge_path}
         </IfModule>
 </Directory>
 ";
-
+  }
 }
 
 /**
- * Implements drush_hook_provision_nginx_server_config().
+ * Implements hook_provision_nginx_server_config().
  *
  * @see https://github.com/lukas2511/letsencrypt.sh/blob/master/docs/wellknown.md
  * @TODO: Test this.
  */
 function letsencrypt_provision_nginx_server_config($data) {
-  $challenge_path = d()->letsencrypt_challenge_path;
-  drush_log(dt("Injecting Let's Encrypt 'well-known' ACME challenge directory ':path' vhost entry.", array(':path' => $challenge_path)));
-  return "
+  if (d()->Certificate_service_type == 'Letsencrypt' && $challenge_path = d()->letsencrypt_challenge_path) {
+    $challenge_path = d()->letsencrypt_challenge_path;
+    drush_log(dt("Injecting Let's Encrypt 'well-known' ACME challenge directory ':path' vhost entry.", array(':path' => $challenge_path)));
+    return "
   location /.well-known/acme-challenge {
     alias {$challenge_path}
   }
 ";
-}
-
-/**
- * Implements hook_provision_ssl_certs_alter().
- */
-function letsencrypt_provision_ssl_certs_alter(&$certs, $name) {
-  $context = d();
-  if ($context->type == 'site' && $context->ssl_enabled > 0 && $context->server->Certificate_service_type == 'Letsencrypt') {
-    drush_log(dt("Overriding certificate and key locations for Let's Encrypt."));
-    $certs['ssl_cert'] = $context->server->letsencrypt_config_path . "/{$name}/cert.pem"; 
-    $certs['ssl_cert_key'] = $context->server->letsencrypt_config_path . "/{$name}/privkey.pem";
-    $certs['ssl_chain_cert'] = $context->server->letsencrypt_config_path . "/{$name}/fullchain.pem";
-    drush_print_r($certs);
-    drush_print_r($name);
   }
 }
 

@@ -123,10 +123,10 @@ function hosting_https_schema() {
 function hosting_https_uninstall() {
   db_delete('hosting_service')
     ->condition('service', 'http')
-    ->condition('type', 'apache_ssl')
+    ->condition('type', 'https_apache')
     ->execute();
   db_delete('hosting_service')
     ->condition('service', 'http')
-    ->condition('type', 'nginx_ssl')
+    ->condition('type', 'https_nginx')
     ->execute();
 }

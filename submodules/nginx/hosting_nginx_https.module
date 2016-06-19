@@ -8,6 +8,6 @@
  */
 function hosting_nginx_https_hosting_service() {
   return array(
-    'nginx_ssl' => 'http',
+    'https_nginx' => 'http',
   );
 }

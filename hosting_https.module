@@ -26,7 +26,7 @@ include_once 'hosting_https.nodeapi.inc';
  */
 function hosting_https_hosting_service() {
   return array(
-    'apache_ssl' => 'http',
+    'https_apache' => 'http',
   );
 }
 
@@ -194,5 +194,5 @@ function hosting_https_server_cert_list($node) {
  */
 function hosting_https_feature_enable_callback() {
   drupal_set_message(t("Please make sure you have enabled SSL support in your webserver, e.g. by enabling mod_ssl in Apache."));
-  drupal_set_message(t("To start using SSL please edit the desired server node within Aegir to set in from e.g. 'apache' to 'apache_ssl'."));
+  drupal_set_message(t("To start using SSL please edit the desired server node within Aegir to set in from e.g. 'apache' to 'apache_https'."));
 }

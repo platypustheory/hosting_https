@@ -4,7 +4,7 @@
  * Define Hosting service class for SSL.
  */
 
-class hostingService_http_ssl extends hostingService_http_public {
+class hostingService_https extends hostingService_http_public {
 
   function load() {
     parent::load();
@@ -81,9 +81,8 @@ class hostingService_http_ssl extends hostingService_http_public {
 
 }
 
-class hostingService_http_apache_ssl extends hostingService_http_ssl {
-  public $type = 'apache_ssl';
-
+class hostingService_http_https_apache extends hostingService_https {
+  public $type = 'https_apache';
 
   protected $has_restart_cmd = TRUE;
 

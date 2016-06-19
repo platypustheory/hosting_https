@@ -1,7 +1,6 @@
-name = Hosting Letsencrypt Service
-description = A service to generate SSL letsencrypts for Aegir-hosted sites.
-package = Hosting Certificate
-dependencies[] = hosting
+name = Aegir Let's Encrypt Service
+description = A service to generate Let's Encrypt certificates for Aegir-hosted sites.
+package = Aegir HTTPS
 dependencies[] = hosting_certificate
 
 core = 7.x

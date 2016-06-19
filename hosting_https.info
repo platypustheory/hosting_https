@@ -1,6 +1,6 @@
-name = SSL support
-description = Allow hostmaster to configure web servers with SSL support
-package = Hosting
+name = Aegir HTTPS
+description = Adds HTTPS support to Aegir sites.
+package = Aegir HTTPS
 dependencies[] = hosting
 dependencies[] = hosting_web_server
 

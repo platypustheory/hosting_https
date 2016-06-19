@@ -1,7 +1,6 @@
 name = Aegir HTTPS Nginx
 description = Adds Nginx support to Aegir HTTPS.
 package = Aegir HTTPS
-dependencies[] = hosting_certificate
 dependencies[] = hosting_https
 dependencies[] = hosting_nginx
 core = 7.x

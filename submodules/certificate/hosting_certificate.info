@@ -1,8 +1,7 @@
 name = Aegir Certificate Service
 description = A service to generate HTTPS certificates for Aegir-hosted sites.
 package = Aegir HTTPS
-dependencies[] = hosting_https
-; TODO: Add dependency on apache_ssl or nginx_ssl running on the server.
+dependencies[] = hosting
 
 core = 7.x
 

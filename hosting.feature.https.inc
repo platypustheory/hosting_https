@@ -8,19 +8,18 @@
  * Implements hook_hosting_feature().
  */
 function hosting_https_hosting_feature() {
-  $features['ssl'] = array(
-    'title' => t('SSL support'),
-    'description' => t('Provides a service to expose a site encrypted by SSL certificates.'),
+  $features['https'] = array(
+    'title' => t('HTTPS support'),
+    'description' => t('Provides a service to expose a site encrypted by HTTPS certificates.'),
     'status' => HOSTING_FEATURE_DISABLED,
     'module' => 'hosting_https',
-    'group' => 'optional',
+    'group' => 'experimental',
     'role_permissions' => array(
       'aegir client' => array(
         'create ssl certificate',
       ),
     ),
     'enable' => 'hosting_https_feature_enable_callback',
-
   );
   return $features;
 }

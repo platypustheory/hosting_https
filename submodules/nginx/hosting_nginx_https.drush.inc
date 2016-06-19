@@ -1,6 +1,6 @@
 <?php
 
-function hosting_nginx_ssl_hosting_site_context_options(&$task) {
+function hosting_nginx_https_hosting_site_context_options(&$task) {
   $node = $task->ref;
 
   if (isset($node->ssl_enabled)) {

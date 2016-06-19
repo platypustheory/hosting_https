@@ -6,4 +6,4 @@ dependencies[] = hosting_ssl
 dependencies[] = hosting_nginx
 core = 7.x
 
-files[] = hosting_nginx_ssl.service.inc
+files[] = hosting_nginx_https.service.inc

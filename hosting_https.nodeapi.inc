@@ -7,7 +7,7 @@
 /**
  * This SSL key is a custom, Aegir generated one.
  */
-define('HOSTING_SSL_CUSTOM_KEY', 'null');
+define('HOSTING_HTTPS_CUSTOM_KEY', 'null');
 
 /**
  * Form API code to extend the site form with SSL fields.
@@ -40,7 +40,7 @@ function hosting_https_site_form(&$form, &$form_state, $form_id) {
     '#options' => hosting_https_status_options(),
     '#description' => t('Enabling encryption will publish your site on both HTTP and HTTPS ports, allowing you to redirect users to the more secure version for certain pages that require the additional security. Requiring encryption will automatically redirect all unencrypted traffic to your HTTPS site.'),
     '#required' => TRUE,
-    '#default_value' => (isset($node->ssl_enabled)) ? $node->ssl_enabled : HOSTING_SSL_DISABLED,
+    '#default_value' => (isset($node->ssl_enabled)) ? $node->ssl_enabled : HOSTING_HTTPS_DISABLED,
     '#access' => user_access('create ssl certificate'),
   ), 'hosting_https_status_options', $ssl_available);
 
@@ -50,7 +50,7 @@ function hosting_https_site_form(&$form, &$form_state, $form_id) {
     '#description' => t("Choose an existing SSL certificate. If you do not wish to use any of your existing certificates, you may choose to generate a new one."),
     '#options' => hosting_https_get_keys(NULL, TRUE),
     '#required' => TRUE,
-    '#default_value' => (isset($node->ssl_key) && $node->ssl_key > 0) ? $node->ssl_key : HOSTING_SSL_CUSTOM_KEY,
+    '#default_value' => (isset($node->ssl_key) && $node->ssl_key > 0) ? $node->ssl_key : HOSTING_HTTPS_CUSTOM_KEY,
     '#access' => user_access('create ssl certificate'),
     '#states' => array(
       'visible' => array(
@@ -68,7 +68,7 @@ function hosting_https_site_form(&$form, &$form_state, $form_id) {
     '#states' => array(
       'visible' => array(
         ':input[name="ssl_enabled"]' => array('!value' => 0),
-        ':input[name="ssl_key"]' => array('value' => HOSTING_SSL_CUSTOM_KEY),
+        ':input[name="ssl_key"]' => array('value' => HOSTING_HTTPS_CUSTOM_KEY),
       ),
     ),
   ), 'filter_xss', $ssl_available, FALSE);
@@ -96,11 +96,11 @@ function hosting_https_hosting_site_options_alter(&$return, $node) {
 
     // Properly default this value so things dont fall apart later.
     if (count($return['ssl_key']) == 1) {
-      $node->ssl_key = HOSTING_SSL_CUSTOM_KEY;
+      $node->ssl_key = HOSTING_HTTPS_CUSTOM_KEY;
     }
 
     // the user has chosen to enter a new key
-    if ($node->ssl_key == HOSTING_SSL_CUSTOM_KEY) {
+    if ($node->ssl_key == HOSTING_HTTPS_CUSTOM_KEY) {
       // default the new key to the site's domain name, after filtering.
       $default = hosting_https_filter_key($node->title);
       $return['ssl_key_new'] = (!empty($default)) ? $default : TRUE;
@@ -122,7 +122,7 @@ function hosting_https_nodeapi_site_view(&$node, $teaser = FALSE) {
   $node->content['info']['ssl_enabled'] = array(
     '#type' => 'item',
     '#title' => t('Encryption'),
-    '#markup' => hosting_https_status_options((isset($node->ssl_enabled)) ? $node->ssl_enabled : HOSTING_SSL_DISABLED),
+    '#markup' => hosting_https_status_options((isset($node->ssl_enabled)) ? $node->ssl_enabled : HOSTING_HTTPS_DISABLED),
     '#weight' => 6,
   );
 
@@ -182,9 +182,9 @@ function hosting_https_output_key($cid) {
  */
 function hosting_https_status_options($status = NULL) {
   $options = array(
-    HOSTING_SSL_DISABLED => t('Disabled'),
-    HOSTING_SSL_ENABLED => t('Enabled'),
-    HOSTING_SSL_REQUIRED => t('Required'),
+    HOSTING_HTTPS_DISABLED => t('Disabled'),
+    HOSTING_HTTPS_ENABLED => t('Enabled'),
+    HOSTING_HTTPS_REQUIRED => t('Required'),
   );
 
   if (!is_null($status)) {
@@ -212,7 +212,7 @@ function hosting_https_nodeapi_site_validate($node, &$form) {
     // TODO: find a way to avoid calling this function multiple times in hook_validate
     $valid_options = hosting_site_available_options($node);
 
-    if ($node->ssl_key == HOSTING_SSL_CUSTOM_KEY) {
+    if ($node->ssl_key == HOSTING_HTTPS_CUSTOM_KEY) {
       if (!strlen($node->ssl_key_new)) {
         form_set_error('ssl_key_new', t("The encryption key field is required to enable us to generate a new SSL certificate for your site."));
       }
@@ -227,7 +227,7 @@ function hosting_https_nodeapi_site_validate($node, &$form) {
           form_set_error('ssl_key_new', t("The encryption key field must start with an alpha-numeric character."));
         }
 
-        if ($key == HOSTING_SSL_CUSTOM_KEY) {
+        if ($key == HOSTING_HTTPS_CUSTOM_KEY) {
           form_set_error('ssl_key_new', t("This encryption key value is reserved for internal use, please choose another"));
         }
       }
@@ -251,10 +251,10 @@ function hosting_https_nodeapi_site_validate($node, &$form) {
  */
 function hosting_https_nodeapi_site_presave(&$node) {
   if (!isset($node->ssl_key)) {
-    $node->ssl_key = HOSTING_SSL_CUSTOM_KEY;
+    $node->ssl_key = HOSTING_HTTPS_CUSTOM_KEY;
   }
   if (!isset($node->ssl_enabled)) {
-    $node->ssl_enabled = HOSTING_SSL_DISABLED;
+    $node->ssl_enabled = HOSTING_HTTPS_DISABLED;
   }
   // This creates the SSL key for the site, if required.
   $node->ssl_key = hosting_https_save_key($node);
@@ -343,7 +343,7 @@ function hosting_https_save_key($node) {
 
   $client = hosting_get_client($node->client);
 
-  if ($node->ssl_key == HOSTING_SSL_CUSTOM_KEY && !empty($node->ssl_key_new)) {
+  if ($node->ssl_key == HOSTING_HTTPS_CUSTOM_KEY && !empty($node->ssl_key_new)) {
     $ssl_key = $node->ssl_key_new;
     $result = db_query("SELECT * FROM {hosting_https_cert} WHERE ssl_key = :ssl_key", array(':ssl_key' => $ssl_key));
     if ($obj = $result->fetch()) {
@@ -385,7 +385,7 @@ function hosting_https_get_keys($client = NULL, $ask_custom = FALSE) {
   $keys = array();
 
   if ($ask_custom == TRUE) {
-    $keys[HOSTING_SSL_CUSTOM_KEY] = t("Generate a new encryption key.");
+    $keys[HOSTING_HTTPS_CUSTOM_KEY] = t("Generate a new encryption key.");
   }
 
   $args = array();
@@ -427,8 +427,8 @@ function hosting_https_clean_keys($node) {
                        )
                        AND siteB.nid = :siteB_nid;",
                  array(
-                   ':ssl_enabled' => HOSTING_SSL_ENABLED,
-                   ':ssl_required' => HOSTING_SSL_REQUIRED,
+                   ':ssl_enabled' => HOSTING_HTTPS_ENABLED,
+                   ':ssl_required' => HOSTING_HTTPS_REQUIRED,
                    ':siteB_nid' => $node->nid,
                  ))->fetchField()) {
     // We need to fetch the ssl_key field from the DB because the object comes

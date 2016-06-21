@@ -16,6 +16,7 @@ class Provision_Service_http_https_nginx extends Provision_Service_http_https {
   function default_restart_cmd() {
     // The nginx service defines it's restart command as a static
     // method so that we can make use of it here.
+    /* TODO: Move to traits for better code re-use. */
     return Provision_Service_http_nginx::nginx_restart_cmd();
   }
 
@@ -28,15 +29,15 @@ class Provision_Service_http_https_nginx extends Provision_Service_http_https {
   /**
    * Initialize the configuration files.
    *
-   * These config classes are a mix of the SSL and Non-SSL nginx
+   * These config classes are a mix of the HTTPS and Non-HTTPS nginx
    * classes. In some cases they extend the Nginx classes too.
    */
   function init_server() {
     parent::init_server();
     // Replace the server config with our own. See the class for more info.
-    $this->configs['server'][] = 'Provision_Config_Nginx_Ssl_Server';
+    $this->configs['server'][] = 'Provision_Config_Nginx_Https_Server';
     $this->configs['server'][] = 'Provision_Config_Nginx_Inc_Server';
-    $this->configs['site'][] = 'Provision_Config_Nginx_Ssl_Site';
+    $this->configs['site'][] = 'Provision_Config_Nginx_Https_Site';
     $this->server->setProperty('nginx_config_mode', 'extended');
     $this->server->setProperty('nginx_is_modern', FALSE);
     $this->server->setProperty('nginx_has_http2', FALSE);
@@ -61,6 +62,12 @@ class Provision_Service_http_https_nginx extends Provision_Service_http_https {
     else {
       return;
     }
+
+    /* TODO: Revisit pretty much everything below this point, as well as the
+     * duplicates in the base nginx config. We need to find a way to
+     * re-implement this stuff via proper hooks, etc. rather than optionally
+     * setting 'basic' mode, etc.*/
+
     // Check if some nginx features are supported and save them for later.
     $this->server->shell_exec($path . ' -V');
     $this->server->nginx_is_modern = preg_match("/nginx\/1\.((1\.(8|9|(1[0-9]+)))|((2|3|4|5|6|7|8|9|[1-9][0-9]+)\.))/", implode('', drush_shell_exec_output()), $match);

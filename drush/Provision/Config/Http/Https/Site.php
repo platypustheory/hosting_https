@@ -6,9 +6,9 @@
  * This class primarily abstracts the process of making sure the relevant keys
  * are synched to the server when the config files that use them get created.
  */
-class Provision_Config_Http_Ssl_Site extends Provision_Config_Http_Site {
-  public $template = 'vhost_ssl.tpl.php';
-  public $disabled_template = 'vhost_ssl_disabled.tpl.php';
+class Provision_Config_Http_Https_Site extends Provision_Config_Http_Site {
+  public $template = 'vhost_https.tpl.php';
+  public $disabled_template = 'vhost_https_disabled.tpl.php';
 
   public $description = 'encrypted virtual host configuration';
 
@@ -27,7 +27,7 @@ class Provision_Config_Http_Ssl_Site extends Provision_Config_Http_Site {
       // Touch a file in the server's copy of this key, so that it knows the key is in use.
       // XXX: test. data structure may not be sound. try d($this->uri)
       // if $this fails
-      Provision_Service_http_ssl::assign_certificate_site($this->ssl_key, $this);
+      Provision_Service_http_https::assign_certificate_site($this->ssl_key, $this);
 
       // Copy the certificates to the server's ssl.d directory.
       provision_file()->copy(
@@ -60,7 +60,7 @@ class Provision_Config_Http_Ssl_Site extends Provision_Config_Http_Site {
 
     if ($this->ssl_enabled) {
       // XXX: to be tested, not sure the data structure is sound
-      Provision_Service_http_ssl::free_certificate_site($this->ssl_key, $this);
+      Provision_Service_http_https::free_certificate_site($this->ssl_key, $this);
     }
   }
   

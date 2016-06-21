@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Virtual host config file for Apache + SSL.
+ * Virtual host config file for Apache HTTPS.
  *
  * This file is created in addition to the existing virtual host, 
  * and includes some extra directives.
  */
-class Provision_Config_Apache_Ssl_Site extends Provision_Config_Http_Ssl_Site {
+class Provision_Config_Apache_Https_Site extends Provision_Config_Http_Https_Site {
   function process() {
     parent::process();
     $this->data['extra_config'] = "# Extra configuration from modules:\n";

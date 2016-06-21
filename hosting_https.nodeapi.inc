@@ -41,9 +41,11 @@ function hosting_https_site_form(&$form, &$form_state, $form_id) {
     '#description' => t('Enabling encryption will publish your site on both HTTP and HTTPS ports, allowing you to redirect users to the more secure version for certain pages that require the additional security. Requiring encryption will automatically redirect all unencrypted traffic to your HTTPS site.'),
     '#required' => TRUE,
     '#default_value' => (isset($node->ssl_enabled)) ? $node->ssl_enabled : HOSTING_HTTPS_DISABLED,
+    // TODO: Use an alternate permission here. Perhaps "Manage site HTTPS settings."
     '#access' => user_access('create ssl certificate'),
   ), 'hosting_https_status_options', $ssl_available);
 
+  // TODO: Remove this, as we should simply use the site URI (title) as the https key (certificate name).
   _hosting_site_field($form['hosting_https_wrapper'], $node, 'ssl_key', array(
     '#type' => 'radios',
     '#title' => t('Encryption key'),
@@ -59,6 +61,7 @@ function hosting_https_site_form(&$form, &$form_state, $form_id) {
     ),
   ), 'hosting_https_output_key', $ssl_available, !$new_site);
 
+  // TODO: Remove this, as we should simply use the site URI (title) as the https key (certificate name).
   _hosting_site_field($form['hosting_https_wrapper'], $node, 'ssl_key_new', array(
     '#type' => 'textfield',
     '#title' => t('New encryption key'),
@@ -78,6 +81,7 @@ function hosting_https_site_form(&$form, &$form_state, $form_id) {
  * Implemensts hook_hosting_site_options_alter
  */
 function hosting_https_hosting_site_options_alter(&$return, $node) {
+  // TODO: Remove this (down to the profile/platform stuff), as we should simply use the site URI (title) as the https key (certificate name).
   // Disable the ssl key fields by default.
   if (!count(hosting_https_get_servers())) {
     $return['ssl_enabled'] = FALSE;
@@ -87,7 +91,6 @@ function hosting_https_hosting_site_options_alter(&$return, $node) {
   $return['ssl_key_new'] = FALSE;
 
   // Test if ssl has been enabled.
-  //if (isset($node->ssl_enabled)) {
   if (isset($node->ssl_enabled) && $node->ssl_enabled) {
 
     $keys = hosting_https_get_keys($node->client, TRUE);
@@ -127,6 +130,7 @@ function hosting_https_nodeapi_site_view(&$node, $teaser = FALSE) {
   );
 
   if (isset($node->ssl_enabled) && $node->ssl_enabled == TRUE) {
+    /* Hardcode this path to the URI (site title). */
     $node->content['info']['ssl_key'] = array(
       '#type' => 'item',
       '#title' => t('Encryption key'),
@@ -140,6 +144,7 @@ function hosting_https_nodeapi_site_view(&$node, $teaser = FALSE) {
 /**
  * @todo Please document this function.
  * @see http://drupal.org/node/1354
+ * TODO: Remove this, or just return the site URI/title.
  */
 function hosting_https_get_key($cid) {
   static $cache = array();
@@ -172,6 +177,7 @@ function hosting_https_get_ip($cid) {
 /**
  * @todo Please document this function.
  * @see http://drupal.org/node/1354
+ * TODO: Remove this, or just return the site URI/title.
  */
 function hosting_https_output_key($cid) {
   return filter_xss(hosting_https_get_key($cid));
@@ -198,7 +204,11 @@ function hosting_https_status_options($status = NULL) {
 /**
  * Filter disallowed characters from a ssl certificate key.
  *
- * Only lowercase alphanumeric- and '.', '_' or '-' characters are allowed for ssl keys.
+ * Only lowercase alphanumeric- and '.', '_' or '-' characters are allowed for
+ * ssl keys.
+ *
+ * TODO: Validate that site URIs will work here. For examplem, do sub-directory
+ * sites need to be munged? example.com/site1 -> example.com_site1 ?
  */
 function hosting_https_filter_key($key) {
   return strtolower(preg_replace("/[^\w\.\-]/", "", $key));
@@ -212,6 +222,7 @@ function hosting_https_nodeapi_site_validate($node, &$form) {
     // TODO: find a way to avoid calling this function multiple times in hook_validate
     $valid_options = hosting_site_available_options($node);
 
+    // TODO: Remove this, as we should simply use the site URI (title) as the https key (certificate name).
     if ($node->ssl_key == HOSTING_HTTPS_CUSTOM_KEY) {
       if (!strlen($node->ssl_key_new)) {
         form_set_error('ssl_key_new', t("The encryption key field is required to enable us to generate a new SSL certificate for your site."));

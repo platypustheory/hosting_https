@@ -14,6 +14,7 @@ function hosting_https_hosting_feature() {
     'status' => HOSTING_FEATURE_DISABLED,
     'module' => 'hosting_https',
     'group' => 'experimental',
+    // TODO: Move to 'manual' certificate implementation.
     'role_permissions' => array(
       'aegir client' => array(
         'create ssl certificate',

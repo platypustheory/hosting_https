@@ -33,6 +33,7 @@ function hosting_https_schema() {
     'primary key' => array('vid', 'nid'),
   );
 
+  /* TODO: Drop this table. */
   $schema['hosting_https_cert'] = array(
     'fields' => array(
       'cid' => array(
@@ -82,6 +83,7 @@ function hosting_https_schema() {
         'not null' => TRUE,
         'default' => 0,
       ),
+      /* Drop this field. Default to sanitized site URI.*/
       'ssl_key' => array(
         'type' => 'int',
         'unsigned' => TRUE,
@@ -92,6 +94,7 @@ function hosting_https_schema() {
     'primary key' => array('vid', 'nid'),
   );
 
+  /* Drop this table.*/
   $schema['hosting_https_cert_ips'] = array(
     'fields' => array(
       // cert id

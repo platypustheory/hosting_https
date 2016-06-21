@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * NodeAPI functions for the Hosting SSL module.
+ * NodeAPI functions for the Hosting HTTPS module.
  */
 
 /**
@@ -184,7 +184,7 @@ function hosting_https_output_key($cid) {
 }
 
 /**
- * Output filter for SSL enabled field.
+ * Output filter for HTTPS enabled field.
  */
 function hosting_https_status_options($status = NULL) {
   $options = array(

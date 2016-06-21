@@ -17,7 +17,7 @@ function hosting_https_hosting_feature() {
     // TODO: Move to 'manual' certificate implementation.
     'role_permissions' => array(
       'aegir client' => array(
-        'create ssl certificate',
+        'create HTTPS certificate',
       ),
     ),
     'enable' => 'hosting_https_feature_enable_callback',

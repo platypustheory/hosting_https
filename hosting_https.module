@@ -1,21 +1,21 @@
 <?php
 /**
  * @file
- * Hook implementations for the Hosting SSL module.
+ * Hook implementations for the Hosting HTTPS module.
  */
 
 /**
- * SSL is disabled for this site.
+ * HTTPS is disabled for this site.
  */
 define('HOSTING_HTTPS_DISABLED', 0);
 
 /**
- * SSL is enabled for this site.
+ * HTTPS is enabled for this site.
  */
 define('HOSTING_HTTPS_ENABLED', 1);
 
 /**
- * SSL is required for this site.
+ * HTTPS is required for this site.
  */
 define('HOSTING_HTTPS_REQUIRED', 2);
 
@@ -23,61 +23,62 @@ include_once 'hosting_https.nodeapi.inc';
 
 /**
  * Implements hook_permission().
+ * TODO: move this to the 'manual' certificate service implementation.
  */
 function hosting_https_permission() {
   return array(
-    'create ssl certificate' => array(
-      'title' => t('create ssl certificate'),
+    'create HTTPS certificate' => array(
+      'title' => t('Create HTTPS certificate.'),
     ),
   );
 }
 
 /**
- * Return a list of servers which have SSL enabled web services.
+ * Return a list of servers which have HTTPS enabled web services.
  */
 function hosting_https_get_servers() {
   $servers = hosting_get_servers('http');
-  $ssl_servers = array();
+  $https_servers = array();
   foreach ($servers as $nid => $title) {
     $node = node_load($nid);
     if ($node->services['http']->ssl_enabled) {
-      $ssl_servers[] = $nid;
+      $https_servers[] = $nid;
     }
   }
-  return $ssl_servers;
+  return $https_servers;
 }
 
 /**
- * Return a list of platforms on SSL enabled servers.
+ * Return a list of platforms on HTTPS enabled servers.
  */
 function hosting_https_get_platforms() {
-  $servers = hosting_https_get_servers();
-  $ssl_platforms = array();
+  $https_servers = hosting_https_get_servers();
+  $https_platforms = array();
 
   $platforms = _hosting_get_platforms();
   foreach ($platforms as $nid => $title) {
     $platform = node_load($nid);
-    if (in_array($platform->web_server, $servers)) {
-      $ssl_platforms[] = $nid;
+    if (in_array($platform->web_server, $https_servers)) {
+      $https_platforms[] = $nid;
     }
   }
 
-  return $ssl_platforms;
+  return $https_platforms;
 }
 
 /**
- * Return a list of profiles with SSL enabled platforms.
+ * Return a list of profiles with HTTPS enabled platforms.
  */
 function hosting_https_get_profiles() {
-  $platforms = hosting_https_get_platforms();
+  $https_platforms = hosting_https_get_platforms();
 
-  $ssl_profiles = array();
-  foreach ($platforms as $nid) {
+  $https_profiles = array();
+  foreach ($https_platforms as $nid) {
     $platform = node_load($nid);
-    $ssl_profiles = array_merge($ssl_profiles, array_keys($platform->profiles));
+    $https_profiles = array_merge($https_profiles, array_keys($platform->profiles));
   }
 
-  return array_unique($ssl_profiles);
+  return array_unique($https_profiles);
 }
 
 /**

@@ -2,20 +2,20 @@
 
 /**
  * @file
- *   A Certificate service type for the Provision API.
+ *   Register with Provision autoloader.
  */
 
 /**
  * Implements hook_drush_init().
  */
-function https_nginx_drush_init() {
-  https_nginx_provision_register_autoload();
+function https_apache_drush_init() {
+  https_apache_provision_register_autoload();
 }
 
 /**
  * Register our directory as a place to find provision classes.
  */
-function https_nginx_provision_register_autoload() {
+function https_apache_provision_register_autoload() {
   static $loaded = FALSE;
   if (!$loaded) {
     $loaded = TRUE;

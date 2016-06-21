@@ -1,6 +1,6 @@
 <?php
 /**
- * @file Register the NGINX SSL Hosting feature.
+ * @file Register the NGINX HTTPS Hosting feature.
  */
 
 /**

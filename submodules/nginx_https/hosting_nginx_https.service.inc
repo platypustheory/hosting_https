@@ -1,9 +1,9 @@
 <?php
 /**
- * @file Define a Hosting service class for NGINX w/SSL.
+ * @file Define a Hosting service class for NGINX w/HTTPS.
  */
 
-module_load_include('service.inc', 'hosting_web_server');
+#module_load_include('service.inc', 'hosting_web_server');
 module_load_include('service.inc', 'hosting_https');
 
 class hostingService_http_https_nginx extends hostingService_https {

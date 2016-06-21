@@ -156,25 +156,6 @@ function hosting_https_get_key($cid) {
 }
 
 /**
- * Get an Array of all IP's associated with an SSL certificate.
- */
-function hosting_https_get_ip($cid) {
-  $result = db_query("SELECT h.name AS server_name, ips.ip_address
-                        FROM {hosting_https_cert_ips} cert
-                  INNER JOIN {hosting_ip_addresses} ips
-                          ON cert.ip_address = ips.id
-                  INNER JOIN {hosting_context} h
-                          ON h.nid = ips.nid
-                       WHERE cid = :cid",
-                      array(':cid' => $cid));
-  $ip_addresses = array();
-  foreach ($result as $record) {
-    $ip_addresses[$record->server_name] = $record->ip_address;
-  }
-  return $ip_addresses;
-}
-
-/**
  * @todo Please document this function.
  * @see http://drupal.org/node/1354
  * TODO: Remove this, or just return the site URI/title.

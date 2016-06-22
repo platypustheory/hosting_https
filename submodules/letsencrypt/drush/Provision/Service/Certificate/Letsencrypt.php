@@ -90,17 +90,6 @@ class Provision_Service_Certificate_Letsencrypt extends Provision_Service_Certif
       else {
         drush_log(dt("Failed to generate Let's Encrypt certificates."), 'warning');
       }
-      $cert_dir = d()->server->http_ssld_path . '/' . d()->uri;
-      $cert_path = $cert_dir . '/openssl.crt';
-      $key_path = $cert_dir . '/openssl.key';
-      $targets = array(
-        'certificate' => "{$config_path}/{$uri}/cert.pem",
-        'key' => "{$config_path}/{$uri}/privkey.pem",
-      );
-      $paths = array(
-        'certificate' => $cert_path,
-        'key' => $key_path,
-      );
     }
   }
 }

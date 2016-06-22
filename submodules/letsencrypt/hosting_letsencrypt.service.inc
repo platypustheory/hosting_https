@@ -49,7 +49,7 @@ class hostingService_Certificate_Letsencrypt extends hostingService_Certificate 
     parent::view($render);
     $render['letsencrypt_field'] = array(
       '#type' => 'item',
-      '#title' => t('Certificate field'),
+      '#title' => t("Let's Encrypt field"),
       // Remember to pass the display through filter_xss!
       '#markup' => filter_xss($this->letsencrypt_field),
     );

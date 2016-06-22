@@ -5,29 +5,28 @@
  */
 
 /**
- * Form API code to extend the site form with SSL fields.
+ * Form API code to extend the site form with HTTPS fields.
  */
 function hosting_https_site_form(&$form, &$form_state, $form_id) {
   $node = $form['#node'];
 
-  $new_site = TRUE;
-  $ssl_available = FALSE;
-  // Only allow the user to modify these values when the platform is SSL enabled.
+  $https_available = FALSE;
+  // Only allow the user to modify these values when the platform is HTTPS enabled.
   if (isset($node->nid)) {
     $new_site = FALSE;
     $platform = node_load($node->platform);
     $server = node_load($platform->web_server);
 
     if ($server->services['http']->ssl_enabled) {
-      $ssl_available = TRUE;
+      $https_available = TRUE;
     }
   }
   
   _hosting_site_field($form, $node, 'hosting_https_wrapper', array(
     '#type' => 'fieldset',
-    '#title' => t('SSL Settings'),
+    '#title' => t('HTTPS Settings'),
     '#default_value' => NULL,
-  ), 'filter_xss', $ssl_available);
+  ), 'filter_xss', $https_available);
 
   _hosting_site_field($form['hosting_https_wrapper'], $node, 'ssl_enabled', array(
     '#type' => 'radios',
@@ -38,7 +37,7 @@ function hosting_https_site_form(&$form, &$form_state, $form_id) {
     '#default_value' => (isset($node->ssl_enabled)) ? $node->ssl_enabled : HOSTING_HTTPS_DISABLED,
     // TODO: Use an alternate permission here. Perhaps "Manage site HTTPS settings."
     '#access' => user_access('create ssl certificate'),
-  ), 'hosting_https_status_options', $ssl_available);
+  ), 'hosting_https_status_options', $https_available);
 
   // Add our custom validate callback.
   $form['#validate'][] = 'hosting_https_site_form_validate';
@@ -96,7 +95,7 @@ function hosting_https_output_key($node) {
 }
 
 /**
- * Output filter for HTTPS enabled field.
+ * Output filter for the HTTPS enabled field.
  */
 function hosting_https_status_options($status = NULL) {
   $options = array(

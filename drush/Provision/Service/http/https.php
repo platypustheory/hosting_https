@@ -50,7 +50,7 @@ class Provision_Service_http_https extends Provision_Service_http_public {
     if ($config == 'server') {
       // Generate a certificate for the default SSL vhost, and retrieve the
       // path to the cert and key files. It will be generated if not found.
-      $certs = $this->get_certificates('default');
+      $certs = $this->server->service('Certificate')->get_certificates('default');
       $data = array_merge($data, $certs);
     }
 
@@ -63,93 +63,12 @@ class Provision_Service_http_https extends Provision_Service_http_public {
       if ($ssl_key = $this->context->ssl_key) {
         // Retrieve the paths to the cert and key files.
         // they are generated if not found.
-        $certs = $this->get_certificates($ssl_key);
+        $certs = $this->server->service('Certificate')->get_certificates($ssl_key);
         $data = array_merge($data, $certs);
       }
     }
 
     return $data;
-  }
-
-  /**
-   * Retrieve an array containing the actual files for this ssl_key.
-   *
-   * If the files could not be found, this function will proceed to generate
-   * certificates for the current site, so that the operation can complete
-   * succesfully.
-   */
-  function get_certificates($ssl_key) {
-    $source_path = "{$this->server->ssld_path}/{$ssl_key}";
-    $certs['ssl_cert_key_source'] = "{$source_path}/openssl.key";
-    $certs['ssl_cert_source'] = "{$source_path}/openssl.crt";
-
-    foreach ($certs as $cert) {
-      $exists = provision_file()->exists($cert)->status();
-      if (!$exists) {
-        // if any of the files don't exist, regenerate them.
-        $this->generate_certificates($ssl_key);
-
-        // break out of the loop.
-        break;
-      }
-    }
-
-    $path = "{$this->server->http_ssld_path}/{$ssl_key}";
-    $certs['ssl_cert_key'] = "{$path}/openssl.key";
-    $certs['ssl_cert'] = "{$path}/openssl.crt";
-
-    // If a certificate chain file exists, add it.
-    $chain_cert_source = "{$source_path}/openssl_chain.crt";
-    if (provision_file()->exists($chain_cert_source)->status()) {
-      $certs['ssl_chain_cert_source'] = $chain_cert_source;
-      $certs['ssl_chain_cert'] = "{$path}/openssl_chain.crt";
-    }
-    return $certs;
-  }
-
-  /**
-   * Generate a self-signed certificate for that key.
-   *
-   * Because we only generate certificates for sites we make some assumptions
-   * based on the uri, but this cert may be replaced by the admin if they
-   * already have an existing certificate.
-   */
-  function generate_certificates($ssl_key) {
-    $path = "{$this->server->ssld_path}/{$ssl_key}";
-
-    provision_file()->create_dir($path,
-      dt("SSL certificate directory for %ssl_key", array(
-        '%ssl_key' => $ssl_key
-      )), 0700);
-
-    if (provision_file()->exists($path)->status()) {
-      drush_log(dt('generating 2048 bit RSA key in %path/', array('%path' => $path)));
-      /* 
-       * according to RSA security and most sites I could read, 1024
-       * was recommended until 2010-2015 and 2048 is now the
-       * recommended length for more sensitive data. we are therefore
-       * taking the safest route.
-       *
-       * http://www.javamex.com/tutorials/cryptography/rsa_key_length.shtml
-       * http://www.vocal.com/cryptography/rsa-key-size-selection/
-       * https://en.wikipedia.org/wiki/Key_size#Key_size_and_encryption_system
-       * http://www.redkestrel.co.uk/Articles/CSR.html
-       */
-      drush_shell_exec('openssl genrsa -out %s/openssl.key 2048', $path)
-        || drush_set_error('SSL_KEY_GEN_FAIL', dt('failed to generate SSL key in %path', array('%path' => $path . '/openssl.key')));
-
-      // Generate the CSR to make the key certifiable by third parties
-      $domain = $ssl_key == 'default' ? 'default.invalid' : $this->context->uri;
-      $ident = "/CN={$domain}/emailAddress=abuse@{$domain}";
-      drush_shell_exec("openssl req -new -subj '%s' -key %s/openssl.key -out %s/openssl.csr -batch", $ident, $path, $path)
-        || drush_log(dt('failed to generate signing request for certificate in %path', array('%path' => $path . '/openssl.csr')));
-
-      // sign the certificate with itself, generating a self-signed
-      // certificate. this will make a SHA1 certificate by default in
-      // current OpenSSL.
-      drush_shell_exec("openssl x509 -req -days 365 -in %s/openssl.csr -signkey %s/openssl.key  -out %s/openssl.crt", $path, $path, $path)
-        || drush_set_error('SSL_CERT_GEN_FAIL', dt('failed to generate self-signed certificate in %path', array('%path' => $path . '/openssl.crt')));
-    }
   }
 
   /**

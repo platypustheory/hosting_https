@@ -19,6 +19,51 @@ class Provision_Service_Certificate extends Provision_Service {
    */
 
   /**
+   * Retrieve an array containing the actual files for this ssl_key.
+   *
+   * If the files could not be found, this function will proceed to generate
+   * certificates for the current site, so that the operation can complete
+   * succesfully.
+   */
+  function get_certificates() {
+    $source_path = "{$this->server->ssld_path}/{$ssl_key}";
+    $certs['ssl_cert_key_source'] = "{$source_path}/openssl.key";
+    $certs['ssl_cert_source'] = "{$source_path}/openssl.crt";
+
+    foreach ($certs as $cert) {
+      $exists = provision_file()->exists($cert)->status();
+      if (!$exists) {
+        // if any of the files don't exist, regenerate them.
+        $this->generate_certificates($ssl_key);
+
+        // break out of the loop.
+        break;
+      }
+    }
+
+    $path = "{$this->server->http_ssld_path}/{$ssl_key}";
+    $certs['ssl_cert_key'] = "{$path}/openssl.key";
+    $certs['ssl_cert'] = "{$path}/openssl.crt";
+
+    // If a certificate chain file exists, add it.
+    $chain_cert_source = "{$source_path}/openssl_chain.crt";
+    if (provision_file()->exists($chain_cert_source)->status()) {
+      $certs['ssl_chain_cert_source'] = $chain_cert_source;
+      $certs['ssl_chain_cert'] = "{$path}/openssl_chain.crt";
+    }
+    return $certs;
+  }
+
+  /**
+   * Generate a self-signed certificate for the provided key.
+   */
+  function generate_certificates($ssl_key) {
+    // This is a dummy implementation. We should probably move this into an
+    // interface.
+    return TRUE;
+  }
+
+  /**
    * Commonly something like running the restart_cmd or sending SIGHUP to a process.
    */
   function parse_configs() {

@@ -40,6 +40,8 @@ function hosting_https_site_form(&$form, &$form_state, $form_id) {
     '#access' => user_access('create ssl certificate'),
   ), 'hosting_https_status_options', $ssl_available);
 
+  // Add our custom validate callback.
+  $form['#validate'][] = 'hosting_https_site_form_validate';
 }
 
 /**
@@ -124,16 +126,32 @@ function hosting_https_filter_key($key) {
 }
 
 /**
- * Implements hook_nodeapi_TYPE_OP().
+ * Site form validation callback.
+ *
+ * @see hosting_https_site_form().
  */
-function hosting_https_nodeapi_site_validate($node, &$form) {
+function hosting_https_site_form_validate($form, $form_state) {
+  $node = $form['#node'];
   if ($node->ssl_enabled) {
-    // TODO, check that the server to host this site has ssl enabled.
-    // if (!empty($node->platform)) {
-      // $platform = node_load($node->platform);
-      // $server = node_load($platform->web_server);
-      // $server->services['http']->type == 'apache_ssl' or nginx_ssl???
-    // }
+    // Check that the server to host this site has HTTPS enabled.
+    if (!empty($node->platform)) {
+      $platform = node_load($node->platform);
+      $server = node_load($platform->web_server);
+      if (!$server->services['http']->ssl_enabled) {
+        $server_name = strlen($server->human_name) ? $server->human_name : $server->title;
+        $server_edit_path = 'node/' . $server->nid . '/edit';
+        if (drupal_valid_path($server_edit_path, TRUE)) {
+          $enable = t('Enable HTTPS on !server.', array('!server' => l($server_name, $server_edit_path)));
+        }
+        else {
+          $enable = t('Ask your site administrator to enable HTTPS.');
+        }
+        return form_set_error('hosting_https_wrapper',
+          t("This site's platform is installed on a server that does not have HTTPS enabled. !enable", array(
+            '!enable' => $enable,
+        )));
+      }
+    }
   }
 }
 

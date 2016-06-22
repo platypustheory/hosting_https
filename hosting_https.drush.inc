@@ -15,7 +15,7 @@ function hosting_https_hosting_site_context_options(&$task) {
     $task->context_options['ssl_enabled'] = ($node->ssl_enabled) ? $node->ssl_enabled : 'null';
 
     if ($node->ssl_enabled) {
-      $task->context_options['ssl_key'] = hosting_https_get_key($node->ssl_key);
+      $task->context_options['ssl_key'] = hosting_https_get_key($node);
     }
     else {
       $task->context_options['ssl_key'] = 'null';

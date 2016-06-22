@@ -24,11 +24,6 @@ class Provision_Config_Http_Https_Site extends Provision_Config_Http_Site {
         '%server' => $this->data['server']->remote_host,
       )), 0700);
 
-      // Touch a file in the server's copy of this key, so that it knows the key is in use.
-      // XXX: test. data structure may not be sound. try d($this->uri)
-      // if $this fails
-      Provision_Service_http_https::assign_certificate_site($this->ssl_key, $this);
-
       // Copy the certificates to the server's ssl.d directory.
       provision_file()->copy(
         $this->data['ssl_cert_source'],
@@ -46,9 +41,7 @@ class Provision_Config_Http_Https_Site extends Provision_Config_Http_Site {
         || drush_set_error('SSL_CHAIN_COPY_FAIL', dt('failed to copy SSL certficate chain in place'));
       }
       // Sync the key directory to the remote server.
-      $this->data['server']->sync($path, array(
-       'exclude' => "{$path}/*.receipt",  // Don't need to synch the receipts
-     ));
+      $this->data['server']->sync($path);
     }
   }
 
@@ -59,19 +52,10 @@ class Provision_Config_Http_Https_Site extends Provision_Config_Http_Site {
     parent::unlink();
 
     if ($this->ssl_enabled) {
-      // XXX: to be tested, not sure the data structure is sound
-      Provision_Service_http_https::free_certificate_site($this->ssl_key, $this);
+      // TODO: Delete the certificate. Presumably this should look something like:
+      // $this->server->service('Certificate')->delete_certificates($this->ssl_key);
     }
   }
   
-  /**
-   * Small utility function to stop code duplication.
-   *
-   * @deprecated unused
-   * @see Provision_Service_http_ssl::free_certificate_site()
-   */
-  private function clear_certs($ssl_key) {
-    return FALSE;
-  }
 }
 

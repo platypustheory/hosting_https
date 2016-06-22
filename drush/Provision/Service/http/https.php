@@ -72,67 +72,6 @@ class Provision_Service_http_https extends Provision_Service_http_public {
   }
 
   /**
-   * Assign the given site to a certificate to mark its usage.
-   *
-   * This is necessary for the backend to figure out when it's okay to
-   * remove certificates.
-   *
-   * Should never fail unless the receipt file cannot be created.
-   *
-   * @return the path to the receipt file if allocation succeeded
-   */
-  static function assign_certificate_site($ssl_key, $site) {
-    $path = $site->data['server']->http_ssld_path . "/" . $ssl_key . "/" . $site->uri . ".receipt";
-    drush_log(dt("registering site %site with SSL certificate %key with receipt file %path", array("%site" => $site->uri, "%key" => $ssl_key, "%path" => $path)));
-    if (touch($path)) {
-      return $path;
-    }
-    else {
-      return FALSE;
-    }
-  }
-
-  /**
-   * Unallocate this certificate from that site.
-   *
-   * @return the path to the receipt file if removal was successful
-   */
-  static function free_certificate_site($ssl_key, $site) {
-    if (empty($ssl_key)) return FALSE;
-    $ssl_dir = $site->platform->server->http_ssld_path . "/" . $ssl_key . "/";
-    // Remove the file system reciept we left for this file
-    if (provision_file()->unlink($ssl_dir . $site->uri . ".receipt")->
-        succeed(dt("Deleted SSL Certificate association receipt for %site on %server", array(
-          '%site' => $site->uri,
-          '%server' => $site->server->remote_host)))->status()) {
-      if (!Provision_Service_http_ssl::certificate_in_use($ssl_key, $site->server)) {
-        drush_log(dt("Deleting unused SSL directory: %dir", array('%dir' => $ssl_dir)));
-        _provision_recursive_delete($ssl_dir);
-        $site->server->sync($path);
-      }
-      return $path;
-    }
-    else {
-      return FALSE;
-    }
-  }
-  
-  /**
-   * Retrieve the status of a certificate on this server.
-   *
-   * This is primarily used to know when it's ok to remove the file.
-   * Each time a config file uses the key on the server, it touches
-   * a 'receipt' file, and every time the site stops using it,
-   * the receipt is removed.
-   *
-   * This function just checks if any of the files are still present.
-   */
-  static function certificate_in_use($ssl_key, $server) {
-    $pattern = $server->http_ssld_path . "/$ssl_key/*.receipt";
-    return sizeof(glob($pattern));
-  }
-
-  /**
    * Verify server.
    */
   function verify_server_cmd() {
@@ -152,4 +91,5 @@ class Provision_Service_http_https extends Provision_Service_http_public {
     // Call the parent at the end. it will restart the server when it finishes.
     parent::verify_server_cmd();
   }
+
 }

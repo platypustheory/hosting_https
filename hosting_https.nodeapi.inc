@@ -13,7 +13,6 @@ function hosting_https_site_form(&$form, &$form_state, $form_id) {
   $https_available = FALSE;
   // Only allow the user to modify these values when the platform is HTTPS enabled.
   if (isset($node->nid)) {
-    $new_site = FALSE;
     $platform = node_load($node->platform);
     $server = node_load($platform->web_server);
 
@@ -56,7 +55,6 @@ function hosting_https_hosting_site_options_alter(&$return, $node) {
     $return['platform'] = array_values(array_intersect($return['platform'], hosting_https_get_platforms()));
   }
 }
-
 
 /**
  * Implements hook_nodeapi_TYPE_OP().
@@ -104,9 +102,11 @@ function hosting_https_status_options($status = NULL) {
     HOSTING_HTTPS_REQUIRED => t('Required'),
   );
 
+  // Return a single label matching the requested status.
   if (!is_null($status)) {
     return $options[$status];
   }
+  // Return the full mapping, for use as radio options.
   return $options;
 
 }
@@ -180,7 +180,7 @@ function hosting_https_nodeapi_site_insert($node) {
  * Implements hook_nodeapi_TYPE_OP().
  */
 function hosting_https_nodeapi_site_update($node) {
-  // check if an existing record is there
+  // Check if there's existing record.
   $result = db_query("SELECT ssl_enabled FROM {hosting_https_site} WHERE vid = :vid", array(':vid' => $node->vid));
   if (!($obj = $result->fetch())) {
     hosting_https_nodeapi_site_insert($node);
@@ -199,13 +199,13 @@ function hosting_https_nodeapi_site_update($node) {
  * Implements hook_node_load().
  */
 function hosting_https_node_load($nodes, $types) {
-  foreach ($nodes as $k => $node) {
+  foreach ($nodes as $nid => $node) {
     $result = db_query("SELECT ssl_enabled FROM {hosting_https_site} WHERE vid = :vid",
       array(':vid' => $node->vid)
       )->fetchObject();
     if ($result) {
-      $nodes[$k]->ssl_enabled = $result->ssl_enabled;
-      $nodes[$k]->ssl_key = hosting_https_get_key($node);
+      $nodes[$nid]->ssl_enabled = $result->ssl_enabled;
+      $nodes[$nid]->ssl_key = hosting_https_get_key($node);
     }
   }
 }

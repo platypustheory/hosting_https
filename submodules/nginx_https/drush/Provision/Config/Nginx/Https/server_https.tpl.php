@@ -14,9 +14,7 @@ if (!$satellite_mode && $server->satellite_mode) {
 
 server {
 
-<?php foreach ($server->ip_addresses as $ip) :  /* TODO: remove this*/?>
-  listen       <?php print $ip . ':' . $http_ssl_port; ?>;
-<?php endforeach; ?>
+  listen       <?php print '*:' . $http_ssl_port; ?>;
   server_name  _;
   location / {
 <?php if ($satellite_mode == 'boa'): /* TODO: Remove BOA-specific settings. Find ways to re-implement them via hooks, etc.*/?>

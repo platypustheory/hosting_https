@@ -40,7 +40,6 @@ class Provision_Service_http_https extends Provision_Service_http_public {
 
     $this->context->setProperty('ssl_enabled', 0);
     $this->context->setProperty('ssl_key', NULL);
-    $this->context->setProperty('ip_addresses', array());
   }
 
 
@@ -56,16 +55,6 @@ class Provision_Service_http_https extends Provision_Service_http_public {
     }
 
     if ($config == 'site' && $this->context->ssl_enabled) {
-      foreach ($this->context->ip_addresses as $server => $ip_address) {
-        if ($server == $this->server->name || '@' . $server == $this->server->name) {
-          $data['ip_address'] = $ip_address;
-          break;
-        }
-      }
-      if (!isset($data['ip_address'])) {
-        drush_log(dt('No proper IP provided by the frontend for server %servername, using wildcard', array('%servername' => $this->server->name)), 'info');
-        $data['ip_address'] = '*';
-      }
       if ($this->context->ssl_enabled == 2) {
         $data['ssl_redirection'] = TRUE;
         $data['redirect_url'] = "https://{$this->context->uri}";
@@ -210,37 +199,6 @@ class Provision_Service_http_https extends Provision_Service_http_public {
   }
   
   /**
-   * Assign the certificate it's own distinct IP address for this server.
-   *
-   * Each certificate needs a unique IP address on each server in order
-   * to be able to be encrypted.
-   *
-   * This code uses the filesystem by touching a reciept file in the
-   * server's ssl.d directory.
-   *
-   * @deprecated this is now based the site URI
-   * @see assign_certificate_site()
-   */
-  static function assign_certificate_ip($ssl_key, $server) {
-    return FALSE;
-  }
-
-  /**
-   * Remove the certificate's lock on the server's public IP.
-   *
-   * This function will delete the receipt file left behind by
-   * the assign_certificate_ip script, allowing the IP to be used
-   * by other certificates.
-   *
-   * @deprecated this is now based on the site URI
-   * @see free_certificate_site()
-   */
-  static function free_certificate_ip($ssl_key, $server) {
-    return FALSE;
-  }
-
-
-  /**
    * Retrieve the status of a certificate on this server.
    *
    * This is primarily used to know when it's ok to remove the file.
@@ -253,16 +211,6 @@ class Provision_Service_http_https extends Provision_Service_http_public {
   static function certificate_in_use($ssl_key, $server) {
     $pattern = $server->http_ssld_path . "/$ssl_key/*.receipt";
     return sizeof(glob($pattern));
-  }
-
-
-  /**
-   * Check for an existing record for this IP address.
-   *
-   * @deprecated we only use the URI-based allocation now
-   */
-  static function get_ip_certificate($ip, $server) {
-    return FALSE;
   }
 
   /**

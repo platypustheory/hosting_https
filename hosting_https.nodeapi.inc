@@ -431,8 +431,5 @@ function hosting_https_clean_keys($node) {
     db_delete('hosting_https_cert')
       ->condition('cid', $ssl_key)
       ->execute();
-    db_delete('hosting_https_cert_ips')
-      ->condition('cid', $ssl_key)
-      ->execute();
   }
 }

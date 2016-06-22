@@ -18,19 +18,10 @@ if ($nginx_has_http2) {
 else {
   $ssl_args = "ssl";
 }
-
-/* TODO: Remove BOA-specific config. */
-if ($satellite_mode == 'boa') {
-  $ssl_listen_ip = "*";
-}
-else {
-  /* TODO: Remove IP handling. */
-  $ssl_listen_ip = $ip_address;
-}
 ?>
 
 server {
-  listen       <?php print "{$ssl_listen_ip}:{$http_ssl_port} {$ssl_args}"; /* TODO: Remove IP handling. */ ?>;
+  listen       <?php print "*:{$http_ssl_port} {$ssl_args}"; ?>;
   server_name  <?php print $this->uri . ' ' . implode(' ', str_replace('/', '.', $this->aliases)); ?>;
 <?php if ($satellite_mode == 'boa'): /* TODO: Remove BOA-specific config. */?>
   root         /var/www/nginx-default;

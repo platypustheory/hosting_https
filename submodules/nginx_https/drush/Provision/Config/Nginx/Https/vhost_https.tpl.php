@@ -18,21 +18,12 @@ if ($nginx_has_http2) {
 else {
   $ssl_args = "ssl";
 }
-
-/* TODO: Remove BOA-specific config. */
-if ($satellite_mode == 'boa') {
-  $ssl_listen_ip = "*";
-}
-else {
-  /* TODO: Remove IP handling. */
-  $ssl_listen_ip = $ip_address;
-}
 ?>
 
 <?php if ($this->redirection): ?>
 <?php foreach ($this->aliases as $alias_url): ?>
 server {
-  listen       <?php print "{$ssl_listen_ip}:{$http_ssl_port} {$ssl_args}"; /* TODO: Remove IP handling. */ ?>;
+  listen       <?php print "*:{$http_ssl_port} {$ssl_args}"; ?>;
 <?php
   // if we use redirections, we need to change the redirection
   // target to be the original site URL ($this->uri instead of
@@ -92,7 +83,7 @@ server {
   }
 ?>
   fastcgi_param db_port   <?php print urlencode($db_port); ?>;
-  listen        <?php print "{$ssl_listen_ip}:{$http_ssl_port} {$ssl_args}"; /* TODO: Remove IP handling. */?>;
+  listen        <?php print "*:{$http_ssl_port} {$ssl_args}"; ?>;
   server_name   <?php
     // this is the main vhost, so we need to put the redirection
     // target as the hostname (if it exists) and not the original URL

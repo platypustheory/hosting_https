@@ -25,7 +25,7 @@ class Provision_Service_Certificate extends Provision_Service {
    * certificates for the current site, so that the operation can complete
    * succesfully.
    */
-  function get_certificates() {
+  function get_certificates($ssl_key) {
     $source_path = "{$this->server->ssld_path}/{$ssl_key}";
     $certs['ssl_cert_key_source'] = "{$source_path}/openssl.key";
     $certs['ssl_cert_source'] = "{$source_path}/openssl.crt";

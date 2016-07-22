@@ -60,10 +60,10 @@ class Provision_Service_http_https extends Provision_Service_http_public {
         $data['redirect_url'] = "https://{$this->context->uri}";
       }
 
-      if ($ssl_key = $this->context->ssl_key) {
+      if ($this->context->ssl_key) {
         // Retrieve the paths to the cert and key files.
-        // they are generated if not found.
-        $certs = $this->server->service('Certificate')->get_certificates($ssl_key);
+        // They are generated if not found.
+        $certs = $this->server->service('Certificate')->get_certificates($this->context->ssl_key);
         $data = array_merge($data, $certs);
       }
     }

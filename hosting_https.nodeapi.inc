@@ -130,8 +130,8 @@ function hosting_https_filter_key($key) {
  * @see hosting_https_site_form().
  */
 function hosting_https_site_form_validate($form, $form_state) {
-  $node = $form['#node'];
-  if ($node->ssl_enabled) {
+  if ($form_state['values']['ssl_enabled']) {
+    $node = $form['#node'];
     // Check that the server to host this site has HTTPS enabled.
     if (!empty($node->platform)) {
       $platform = node_load($node->platform);

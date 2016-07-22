@@ -47,12 +47,6 @@ class Provision_Service_Certificate extends Provision_Service {
       }
     }
 
-    // If a certificate chain file exists, add it.
-    #$chain_cert_source = "{$source_path}/openssl_chain.crt";
-    #if (provision_file()->exists($chain_cert_source)->status()) {
-    #  $certs['ssl_chain_cert_source'] = $chain_cert_source;
-    #  $certs['ssl_chain_cert'] = "{$path}/openssl_chain.crt";
-    #}
     return $certs;
   }
 

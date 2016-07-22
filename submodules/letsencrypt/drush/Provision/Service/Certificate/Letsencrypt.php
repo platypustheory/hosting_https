@@ -56,6 +56,72 @@ class Provision_Service_Certificate_Letsencrypt extends Provision_Service_Certif
   }
 
   /**
+   * Return the path where we'll generate our certificates.
+   */
+  function get_source_path($ssl_key) {
+    return "{$this->server->letsencrypt_config_path}/{$ssl_key}";
+  }
+
+  /**
+   * Retrieve an array containing the actual files for this ssl_key.
+   */
+  function get_certificates($ssl_key) {
+    $certs = parent::get_certificates($ssl_key);
+    // This method is not strictly required, since it's just calling the parent
+    // implementation. However, for illustrative purposes, this is where we'd
+    // alter certificate paths, if we wanted to.
+    return $certs;
+  }
+
+  /**
+   * Retrieve an array containing source and target paths for this ssl_key.
+   */
+  function get_certificate_paths($ssl_key) {
+    $source_path = $this->get_source_path($ssl_key);
+    $target_path = "{$this->server->http_ssld_path}/{$ssl_key}";
+
+    $certs = array();
+    $certs['ssl_cert_key_source'] = "{$source_path}/privkey.pem";
+    $certs['ssl_cert_key'] = "{$target_path}/openssl.key";
+    $certs['ssl_cert_source'] = "{$source_path}/cert.pem";
+    $certs['ssl_cert'] = "{$target_path}/openssl.crt";
+    $certs['ssl_chain_cert_source'] = "{$source_path}/fullchain.pem";
+    $certs['ssl_chain_cert'] = "{$target_path}/openssl_chain.crt";
+
+    return $certs;
+  }
+
+  /**
+   * Generate a self-signed certificate for the provided key.
+   *
+   * Because we only generate certificates for sites we make some assumptions
+   * based on the uri, but this cert may be replaced by the admin if they
+   * already have an existing certificate.
+   */
+  function generate_certificates($ssl_key) {
+    $path = $this->get_source_path($ssl_key);
+    provision_file()->create_dir($path,
+    dt("SSL certificate directory for %ssl_key", array(
+      '%ssl_key' => $ssl_key
+    )), 0700);
+
+    $script_path = d()->server->letsencrypt_script_path;
+    $config_path = d()->server->letsencrypt_config_path;
+    $uri = d()->uri;
+    drush_log(dt("Generating Let's Encrypt certificates."));
+    $result = drush_shell_exec("{$script_path}/letsencrypt.sh -c -f {$script_path}/config.staging --out {$config_path} -d {$uri} -x");
+    foreach (drush_shell_exec_output() as $line) {
+      drush_log($line);
+    }
+    if ($result) {
+      drush_log(dt("Successfully generated Let's Encrypt certificates."), 'success');
+    }
+    else {
+      drush_log(dt("Failed to generate Let's Encrypt certificates."), 'warning');
+    }
+  }
+
+  /**
    * Implementation of service verify.
    *
    * Called from drush_certificate_provision_verify().
@@ -74,22 +140,6 @@ class Provision_Service_Certificate_Letsencrypt extends Provision_Service_Certif
       }
       // Sync the directory to the remote server if needed.
     #  $this->sync($this->server->letsencrypt_config_path);
-    }
-    if ($this->context->type == 'site' && $this->context->ssl_enabled > 0) {
-      $script_path = d()->server->letsencrypt_script_path;
-      $config_path = d()->server->letsencrypt_config_path;
-      $uri = d()->uri;
-      drush_log(dt("Generating Let's Encrypt certificates."));
-      $result = drush_shell_exec("{$script_path}/letsencrypt.sh -c -f {$script_path}/config.staging --out {$config_path} -d {$uri} -x");
-      foreach (drush_shell_exec_output() as $line) {
-        drush_log($line);
-      }
-      if ($result) {
-        drush_log(dt("Successfully generated Let's Encrypt certificates."), 'success');
-      }
-      else {
-        drush_log(dt("Failed to generate Let's Encrypt certificates."), 'warning');
-      }
     }
   }
 }

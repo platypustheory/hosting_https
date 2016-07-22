@@ -34,10 +34,7 @@ class Provision_Service_Certificate extends Provision_Service {
    * succesfully.
    */
   function get_certificates($ssl_key) {
-    $source_path = $this->get_source_path($ssl_key);
-
-    $certs['ssl_cert_key_source'] = "{$source_path}/openssl.key";
-    $certs['ssl_cert_source'] = "{$source_path}/openssl.crt";
+    $certs = $this->get_certificate_paths($ssl_key);
 
     foreach ($certs as $cert) {
       $exists = provision_file()->exists($cert)->status();
@@ -50,17 +47,22 @@ class Provision_Service_Certificate extends Provision_Service {
       }
     }
 
-    $path = "{$this->server->http_ssld_path}/{$ssl_key}";
-    $certs['ssl_cert_key'] = "{$path}/openssl.key";
-    $certs['ssl_cert'] = "{$path}/openssl.crt";
-
     // If a certificate chain file exists, add it.
-    $chain_cert_source = "{$source_path}/openssl_chain.crt";
-    if (provision_file()->exists($chain_cert_source)->status()) {
-      $certs['ssl_chain_cert_source'] = $chain_cert_source;
-      $certs['ssl_chain_cert'] = "{$path}/openssl_chain.crt";
-    }
+    #$chain_cert_source = "{$source_path}/openssl_chain.crt";
+    #if (provision_file()->exists($chain_cert_source)->status()) {
+    #  $certs['ssl_chain_cert_source'] = $chain_cert_source;
+    #  $certs['ssl_chain_cert'] = "{$path}/openssl_chain.crt";
+    #}
     return $certs;
+  }
+
+  /**
+   * Retrieve an array containing source and target paths for this ssl_key.
+   */
+  function get_certificate_paths($ssl_key) {
+    // This is a dummy implementation. We should probably move this into an
+    // interface.
+    return TRUE;
   }
 
   /**

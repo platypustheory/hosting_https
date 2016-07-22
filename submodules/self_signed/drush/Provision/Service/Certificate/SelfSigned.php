@@ -72,6 +72,22 @@ class Provision_Service_Certificate_SelfSigned extends Provision_Service_Certifi
   }
 
   /**
+   * Retrieve an array containing source and target paths for this ssl_key.
+   */
+  function get_certificate_paths($ssl_key) {
+    $source_path = $this->get_source_path($ssl_key);
+    $target_path = "{$this->server->http_ssld_path}/{$ssl_key}";
+
+    $certs = array();
+    $certs['ssl_cert_key_source'] = "{$source_path}/openssl.key";
+    $certs['ssl_cert_key'] = "{$target_path}/openssl.key";
+    $certs['ssl_cert_source'] = "{$source_path}/openssl.crt";
+    $certs['ssl_cert'] = "{$target_path}/openssl.crt";
+
+    return $certs;
+  }
+
+  /**
    * Generate a self-signed certificate for the provided key.
    *
    * Because we only generate certificates for sites we make some assumptions

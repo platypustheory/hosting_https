@@ -54,6 +54,13 @@ class Provision_Service_Certificate_SelfSigned extends Provision_Service_Certifi
   }
 
   /**
+   * Return the path where we'll generate our certificates.
+   */
+  function get_source_path($ssl_key) {
+    return "{$this->server->self_signed_config_path}/{$ssl_key}";
+  }
+
+  /**
    * Retrieve an array containing the actual files for this ssl_key.
    */
   function get_certificates($ssl_key) {
@@ -72,8 +79,7 @@ class Provision_Service_Certificate_SelfSigned extends Provision_Service_Certifi
    * already have an existing certificate.
    */
   function generate_certificates($ssl_key) {
-    $path = "{$this->server->ssld_path}/{$ssl_key}";
-
+    $path = $this->get_source_path($ssl_key);
     provision_file()->create_dir($path,
       dt("SSL certificate directory for %ssl_key", array(
         '%ssl_key' => $ssl_key

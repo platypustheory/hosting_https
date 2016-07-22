@@ -19,6 +19,14 @@ class Provision_Service_Certificate extends Provision_Service {
    */
 
   /**
+   * Return the path where we'll generate our certificates.
+   */
+  function get_source_path($ssl_key) {
+    // Default to the ~/config/ssl.d directory.
+    return "{$this->server->ssld_path}/{$ssl_key}";
+  }
+
+  /**
    * Retrieve an array containing the actual files for this ssl_key.
    *
    * If the files could not be found, this function will proceed to generate
@@ -26,7 +34,8 @@ class Provision_Service_Certificate extends Provision_Service {
    * succesfully.
    */
   function get_certificates($ssl_key) {
-    $source_path = "{$this->server->ssld_path}/{$ssl_key}";
+    $source_path = $this->get_source_path($ssl_key);
+
     $certs['ssl_cert_key_source'] = "{$source_path}/openssl.key";
     $certs['ssl_cert_source'] = "{$source_path}/openssl.crt";
 

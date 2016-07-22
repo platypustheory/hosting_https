@@ -76,8 +76,6 @@ class Provision_Service_http_https extends Provision_Service_http_public {
    */
   function verify_server_cmd() {
     if ($this->context->type === 'server') {
-      provision_file()->create_dir($this->server->ssld_path, dt("Central SSL certificate repository."), 0700);
-
       provision_file()->create_dir($this->server->http_ssld_path,
         dt("SSL certificate repository for %server",
         array('%server' => $this->server->remote_host)), 0700);

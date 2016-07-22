@@ -26,7 +26,7 @@ class Provision_Service_http_https extends Provision_Service_http_public {
     // SSL certificate store.
     // The certificates are generated from here, and distributed to the servers,
     // as needed.
-    $this->server->ssld_path = "{$this->server->aegir_root}/config/ssl.d";
+    $this->server->ssld_path = $this->server->service('Certificate')->get_source_path('');
 
     // SSL certificate store for this server.
     // This server's certificates will be stored here.

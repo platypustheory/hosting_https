@@ -5,7 +5,7 @@
  *
  * Just a file containing the value passed to us.
  */
-class Provision_Config_Certificate_Letsencrypt extends Provision_Config_Certificate {
+class Provision_Config_Certificate_LetsEncrypt extends Provision_Config_Certificate {
   /**
    * Template file to load. In the same directory as this class definition.
    */

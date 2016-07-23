@@ -2,15 +2,15 @@
 
 /**
  * @file
- * Letsencrypt service implementation of the Certificate service type for the hosting front end.
+ * LetsEncrypt service implementation of the Certificate service type for the hosting front end.
  */
 
 /**
  * An implementation of the certificate service type, registered with hook_hosting_service.
  */
-class hostingService_Certificate_Letsencrypt extends hostingService_Certificate {
+class hostingService_Certificate_LetsEncrypt extends hostingService_Certificate {
 
-  public $type = 'Letsencrypt';
+  public $type = 'LetsEncrypt';
 
   protected $letsencrypt_ca = 'staging';
   protected $letsencrypt_ca_options = array(

@@ -2,7 +2,7 @@
 
 /**
  * @file
- *   A Letsencrypt implementation of the Certificate service for the Provision API.
+ *   A LetsEncrypt implementation of the Certificate service for the Provision API.
  */
 
 /**
@@ -39,7 +39,7 @@ function letsencrypt_provision_services() {
  * @see https://github.com/lukas2511/letsencrypt.sh/blob/master/docs/wellknown.md
  */
 function letsencrypt_provision_apache_server_config($data) {
-  if (d()->Certificate_service_type == 'Letsencrypt' && $challenge_path = d()->letsencrypt_challenge_path) {
+  if (d()->Certificate_service_type == 'LetsEncrypt' && $challenge_path = d()->letsencrypt_challenge_path) {
     drush_log(dt("Injecting Let's Encrypt 'well-known' ACME challenge directory ':path' vhost entry.", array(':path' => $challenge_path)));
     return "
 Alias /.well-known/acme-challenge {$challenge_path}
@@ -70,7 +70,7 @@ Alias /.well-known/acme-challenge {$challenge_path}
  * @TODO: Test this.
  */
 function letsencrypt_provision_nginx_server_config($data) {
-  if (d()->Certificate_service_type == 'Letsencrypt' && $challenge_path = d()->letsencrypt_challenge_path) {
+  if (d()->Certificate_service_type == 'LetsEncrypt' && $challenge_path = d()->letsencrypt_challenge_path) {
     $challenge_path = d()->letsencrypt_challenge_path;
     drush_log(dt("Injecting Let's Encrypt 'well-known' ACME challenge directory ':path' vhost entry.", array(':path' => $challenge_path)));
     return "

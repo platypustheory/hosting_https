@@ -2,14 +2,14 @@
 
 /**
  * @file
- * Letsencrypt certificate generation service.
+ * LetsEncrypt certificate generation service.
  */
 
 /**
  * Implements hook_hosting_service().
  */
 function hosting_letsencrypt_hosting_service() {
-  return array('Letsencrypt' => 'Certificate');
+  return array('LetsEncrypt' => 'Certificate');
 }
 
 /**
@@ -18,7 +18,7 @@ function hosting_letsencrypt_hosting_service() {
  * @see: hosting_letsencrypt_hosting_feature().
  */
 function hosting_letsencrypt_feature_enable_callback() {
-  drupal_set_message(t("The 'Letsencrypt' feature's <strong>enable</strong> callback was just called."));
+  drupal_set_message(t("The 'LetsEncrypt' feature's <strong>enable</strong> callback was just called."));
 }
 
 /**
@@ -27,6 +27,6 @@ function hosting_letsencrypt_feature_enable_callback() {
  * @see: hosting_letsencrypt_hosting_feature().
  */
 function hosting_letsencrypt_feature_disable_callback() {
-  drupal_set_message(t("The 'Letsencrypt' feature's <strong>disable</strong> callback was just called."));
+  drupal_set_message(t("The 'LetsEncrypt' feature's <strong>disable</strong> callback was just called."));
 }
 

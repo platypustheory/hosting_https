@@ -1,10 +1,10 @@
 <?php
 
 /**
- *   A Letsencrypt implementation of the Certificate service type.
+ *   A LetsEncrypt implementation of the Certificate service type.
  */
-class Provision_Service_Certificate_Letsencrypt extends Provision_Service_Certificate {
-  public $service = 'Letsencrypt';
+class Provision_Service_Certificate_LetsEncrypt extends Provision_Service_Certificate {
+  public $service = 'LetsEncrypt';
 
   /**
    * Initialize this class, including option handling.
@@ -15,7 +15,7 @@ class Provision_Service_Certificate_Letsencrypt extends Provision_Service_Certif
     /**
      * Register configuration classes for the create_config / delete_config methods.
      */
-    $this->configs['server'][] = 'Provision_Config_Letsencrypt';
+    $this->configs['server'][] = 'Provision_Config_LetsEncrypt';
 
     /**
      * Configurable values.

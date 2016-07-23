@@ -20,7 +20,7 @@ class Provision_Service_Certificate_Letsencrypt extends Provision_Service_Certif
     /**
      * Configurable values.
      */
-    $this->server->setProperty('letsencrypt_field', 'default');
+    $this->server->setProperty('letsencrypt_ca', 'staging');
 
     /**
      * Non configurable values.
@@ -105,11 +105,22 @@ class Provision_Service_Certificate_Letsencrypt extends Provision_Service_Certif
       '%https_key' => $https_key
     )), 0700);
 
+    // TODO: If we ever need more granular control, we can generate the config
+    // file instead.
+    switch (d()->server->letsencrypt_ca) {
+      case 'production':
+        $config_file = 'config';
+        break;
+      case 'staging':
+      default:
+        $config_file = 'config.staging';
+    }
+
     $script_path = d()->server->letsencrypt_script_path;
     $config_path = d()->server->letsencrypt_config_path;
     $uri = d()->uri;
     drush_log(dt("Generating Let's Encrypt certificates."));
-    $result = drush_shell_exec("{$script_path}/letsencrypt.sh -c -f {$script_path}/config.staging --out {$config_path} -d {$uri} -x");
+    $result = drush_shell_exec("{$script_path}/letsencrypt.sh -c -f {$script_path}/{$config_file} --out {$config_path} -d {$uri} -x");
     foreach (drush_shell_exec_output() as $line) {
       drush_log($line);
     }

@@ -12,7 +12,11 @@ class hostingService_Certificate_Letsencrypt extends hostingService_Certificate 
 
   public $type = 'Letsencrypt';
 
-  protected $letsencrypt_field = 'default';
+  protected $letsencrypt_ca = 'staging';
+  protected $letsencrypt_ca_options = array(
+    'staging' => 'Staging',
+    'production' => 'Production',
+  );
 
   /**
    * node operations
@@ -20,22 +24,10 @@ class hostingService_Certificate_Letsencrypt extends hostingService_Certificate 
 
   /**
    * Load associated values for the service.
-   *
-   * In this certificate we will use the variable system to retrieve values.
    */
   function load() {
     parent::load();
-    $this->letsencrypt_field = variable_get('hosting_letsencrypt_field_' . $this->server->nid, $this->letsencrypt_field);
-
-    /**
-     * Although this certificate does not have it's own tables, we provide some utitilty functions
-     * for use in this method.
-     *
-     * If this certificate used it's own tables, we could use the mergeData method below to merge in the
-     * results automatically, instead of iterating through the results ourself.
-     */
-
-    // $this->mergeData("SELECT letsencrypt_field FROM {hosting_certificate} WHERE vid = :vid", array(':vid' => $this->server->vid));
+    $this->letsencrypt_ca = variable_get('hosting_letsencrypt_ca_' . $this->server->nid, $this->letsencrypt_ca);
   }
 
   /**
@@ -47,11 +39,11 @@ class hostingService_Certificate_Letsencrypt extends hostingService_Certificate 
    */
   function view(&$render) {
     parent::view($render);
-    $render['letsencrypt_field'] = array(
+    $render['letsencrypt_ca'] = array(
       '#type' => 'item',
-      '#title' => t("Let's Encrypt field"),
+      '#title' => t("Let's Encrypt CA"),
       // Remember to pass the display through filter_xss!
-      '#markup' => filter_xss($this->letsencrypt_field),
+      '#markup' => filter_xss($this->letsencrypt_ca_options[$this->letsencrypt_ca]),
     );
   }
 
@@ -65,26 +57,16 @@ class hostingService_Certificate_Letsencrypt extends hostingService_Certificate 
   function form(&$form) {
     parent::form($form);
 
-    $form['letsencrypt_field'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Letsencrypt field'),
-      '#description' => t('An letsencrypt field for the user to fill in.'),
+    $form['letsencrypt_ca'] = array(
+      '#type' => 'radios',
+      '#options' => $this->letsencrypt_ca_options,
+      '#title' => t("Let's Encrypt CA"),
+      '#description' => t("Which LE Certificate Authority server to use."),
       '#size' => 40,
-      '#default_value' => $this->letsencrypt_field,
+      '#default_value' => $this->letsencrypt_ca,
       '#maxlength' => 64,
       '#weight' => 5,
     );
-  }
-
-  /**
-   * Validate a form submission.
-   */
-  function validate(&$node, &$form, &$form_state) {
-    parent::validate($node, $form, $form_state);
-
-    if (sizeof($this->letsencrypt_field) > 30) {
-      form_set_error('letsencrypt_field', t("The certificate string must not be longer than 30 characters"));
-    }
   }
 
   /**
@@ -93,7 +75,7 @@ class hostingService_Certificate_Letsencrypt extends hostingService_Certificate 
   function insert() {
     parent::insert();
 
-    variable_set('hosting_letsencrypt_field_' . $this->server->nid, $this->letsencrypt_field);
+    variable_set('hosting_letsencrypt_ca_' . $this->server->nid, $this->letsencrypt_ca);
   }
 
   /**
@@ -102,7 +84,7 @@ class hostingService_Certificate_Letsencrypt extends hostingService_Certificate 
   function update() {
     parent::update();
 
-    variable_set('hosting_letsencrypt_field_' . $this->server->nid, $this->letsencrypt_field);
+    variable_set('hosting_letsencrypt_ca_' . $this->server->nid, $this->letsencrypt_ca);
   }
 
   /**
@@ -111,7 +93,7 @@ class hostingService_Certificate_Letsencrypt extends hostingService_Certificate 
   function delete() {
     parent::delete();
 
-    variable_del('hosting_letsencrypt_field_' . $this->server->nid);
+    variable_del('hosting_letsencrypt_ca_' . $this->server->nid);
   }
 
   /**
@@ -127,6 +109,6 @@ class hostingService_Certificate_Letsencrypt extends hostingService_Certificate 
   public function context_options($task_type, $ref_type, &$task) {
     parent::context_options($task_type, $ref_type, $task);
 
-    $task->context_options['letsencrypt_field'] = $this->letsencrypt_field;
+    $task->context_options['letsencrypt_ca'] = $this->letsencrypt_ca;
   }
 }

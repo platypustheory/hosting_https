@@ -58,15 +58,15 @@ class Provision_Service_Certificate_Letsencrypt extends Provision_Service_Certif
   /**
    * Return the path where we'll generate our certificates.
    */
-  function get_source_path($ssl_key) {
-    return "{$this->server->letsencrypt_config_path}/{$ssl_key}";
+  function get_source_path($https_key) {
+    return "{$this->server->letsencrypt_config_path}/{$https_key}";
   }
 
   /**
-   * Retrieve an array containing the actual files for this ssl_key.
+   * Retrieve an array containing the actual files for this https_key.
    */
-  function get_certificates($ssl_key) {
-    $certs = parent::get_certificates($ssl_key);
+  function get_certificates($https_key) {
+    $certs = parent::get_certificates($https_key);
     // This method is not strictly required, since it's just calling the parent
     // implementation. However, for illustrative purposes, this is where we'd
     // alter certificate paths, if we wanted to.
@@ -74,19 +74,19 @@ class Provision_Service_Certificate_Letsencrypt extends Provision_Service_Certif
   }
 
   /**
-   * Retrieve an array containing source and target paths for this ssl_key.
+   * Retrieve an array containing source and target paths for this https_key.
    */
-  function get_certificate_paths($ssl_key) {
-    $source_path = $this->get_source_path($ssl_key);
-    $target_path = "{$this->server->http_ssld_path}/{$ssl_key}";
+  function get_certificate_paths($https_key) {
+    $source_path = $this->get_source_path($https_key);
+    $target_path = "{$this->server->http_ssld_path}/{$https_key}";
 
     $certs = array();
-    $certs['ssl_cert_key_source'] = "{$source_path}/privkey.pem";
-    $certs['ssl_cert_key'] = "{$target_path}/openssl.key";
-    $certs['ssl_cert_source'] = "{$source_path}/cert.pem";
-    $certs['ssl_cert'] = "{$target_path}/openssl.crt";
-    $certs['ssl_chain_cert_source'] = "{$source_path}/fullchain.pem";
-    $certs['ssl_chain_cert'] = "{$target_path}/openssl_chain.crt";
+    $certs['https_cert_key_source'] = "{$source_path}/privkey.pem";
+    $certs['https_cert_key'] = "{$target_path}/openssl.key";
+    $certs['https_cert_source'] = "{$source_path}/cert.pem";
+    $certs['https_cert'] = "{$target_path}/openssl.crt";
+    $certs['https_chain_cert_source'] = "{$source_path}/fullchain.pem";
+    $certs['https_chain_cert'] = "{$target_path}/openssl_chain.crt";
 
     return $certs;
   }
@@ -98,11 +98,11 @@ class Provision_Service_Certificate_Letsencrypt extends Provision_Service_Certif
    * based on the uri, but this cert may be replaced by the admin if they
    * already have an existing certificate.
    */
-  function generate_certificates($ssl_key) {
-    $path = $this->get_source_path($ssl_key);
+  function generate_certificates($https_key) {
+    $path = $this->get_source_path($https_key);
     provision_file()->create_dir($path,
-    dt("SSL certificate directory for %ssl_key", array(
-      '%ssl_key' => $ssl_key
+    dt("HTTPS certificate directory for %https_key", array(
+      '%https_key' => $https_key
     )), 0700);
 
     $script_path = d()->server->letsencrypt_script_path;

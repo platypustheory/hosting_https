@@ -56,15 +56,15 @@ class Provision_Service_Certificate_SelfSigned extends Provision_Service_Certifi
   /**
    * Return the path where we'll generate our certificates.
    */
-  function get_source_path($ssl_key) {
-    return "{$this->server->self_signed_config_path}/{$ssl_key}";
+  function get_source_path($https_key) {
+    return "{$this->server->self_signed_config_path}/{$https_key}";
   }
 
   /**
-   * Retrieve an array containing the actual files for this ssl_key.
+   * Retrieve an array containing the actual files for this https_key.
    */
-  function get_certificates($ssl_key) {
-    $certs = parent::get_certificates($ssl_key);
+  function get_certificates($https_key) {
+    $certs = parent::get_certificates($https_key);
     // This method is not strictly required, since it's just calling the parent
     // implementation. However, for illustrative purposes, this is where we'd
     // alter certificate paths, if we wanted to.
@@ -72,17 +72,17 @@ class Provision_Service_Certificate_SelfSigned extends Provision_Service_Certifi
   }
 
   /**
-   * Retrieve an array containing source and target paths for this ssl_key.
+   * Retrieve an array containing source and target paths for this https_key.
    */
-  function get_certificate_paths($ssl_key) {
-    $source_path = $this->get_source_path($ssl_key);
-    $target_path = "{$this->server->http_ssld_path}/{$ssl_key}";
+  function get_certificate_paths($https_key) {
+    $source_path = $this->get_source_path($https_key);
+    $target_path = "{$this->server->http_ssld_path}/{$https_key}";
 
     $certs = array();
-    $certs['ssl_cert_key_source'] = "{$source_path}/openssl.key";
-    $certs['ssl_cert_key'] = "{$target_path}/openssl.key";
-    $certs['ssl_cert_source'] = "{$source_path}/openssl.crt";
-    $certs['ssl_cert'] = "{$target_path}/openssl.crt";
+    $certs['https_cert_key_source'] = "{$source_path}/openssl.key";
+    $certs['https_cert_key'] = "{$target_path}/openssl.key";
+    $certs['https_cert_source'] = "{$source_path}/openssl.crt";
+    $certs['https_cert'] = "{$target_path}/openssl.crt";
 
     return $certs;
   }
@@ -94,11 +94,11 @@ class Provision_Service_Certificate_SelfSigned extends Provision_Service_Certifi
    * based on the uri, but this cert may be replaced by the admin if they
    * already have an existing certificate.
    */
-  function generate_certificates($ssl_key) {
-    $path = $this->get_source_path($ssl_key);
+  function generate_certificates($https_key) {
+    $path = $this->get_source_path($https_key);
     provision_file()->create_dir($path,
-      dt("SSL certificate directory for %ssl_key", array(
-        '%ssl_key' => $ssl_key
+      dt("HTTPS certificate directory for %https_key", array(
+        '%https_key' => $https_key
       )), 0700);
 
     if (provision_file()->exists($path)->status()) {
@@ -115,10 +115,10 @@ class Provision_Service_Certificate_SelfSigned extends Provision_Service_Certifi
        * http://www.redkestrel.co.uk/Articles/CSR.html
        */
       drush_shell_exec('openssl genrsa -out %s/openssl.key 2048', $path)
-        || drush_set_error('SSL_KEY_GEN_FAIL', dt('failed to generate SSL key in %path', array('%path' => $path . '/openssl.key')));
+        || drush_set_error('HTTPS_KEY_GEN_FAIL', dt('failed to generate HTTPS key in %path', array('%path' => $path . '/openssl.key')));
 
       // Generate the CSR to make the key certifiable by third parties
-      $domain = $ssl_key == 'default' ? 'default.invalid' : $this->context->uri;
+      $domain = $https_key == 'default' ? 'default.invalid' : $this->context->uri;
       $ident = "/CN={$domain}/emailAddress=abuse@{$domain}";
       drush_shell_exec("openssl req -new -subj '%s' -key %s/openssl.key -out %s/openssl.csr -batch", $ident, $path, $path)
         || drush_log(dt('failed to generate signing request for certificate in %path', array('%path' => $path . '/openssl.csr')));
@@ -127,7 +127,7 @@ class Provision_Service_Certificate_SelfSigned extends Provision_Service_Certifi
       // certificate. this will make a SHA1 certificate by default in
       // current OpenSSL.
       drush_shell_exec("openssl x509 -req -days 365 -in %s/openssl.csr -signkey %s/openssl.key  -out %s/openssl.crt", $path, $path, $path)
-        || drush_set_error('SSL_CERT_GEN_FAIL', dt('failed to generate self-signed certificate in %path', array('%path' => $path . '/openssl.crt')));
+        || drush_set_error('HTTPS_CERT_GEN_FAIL', dt('failed to generate self-signed certificate in %path', array('%path' => $path . '/openssl.crt')));
     }
   }
 

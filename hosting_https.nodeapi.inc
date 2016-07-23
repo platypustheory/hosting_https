@@ -16,7 +16,7 @@ function hosting_https_site_form(&$form, &$form_state, $form_id) {
     $platform = node_load($node->platform);
     $server = node_load($platform->web_server);
 
-    if ($server->services['http']->ssl_enabled) {
+    if ($server->services['http']->https_enabled) {
       $https_available = TRUE;
     }
   }
@@ -27,15 +27,14 @@ function hosting_https_site_form(&$form, &$form_state, $form_id) {
     '#default_value' => NULL,
   ), 'filter_xss', $https_available);
 
-  _hosting_site_field($form['hosting_https_wrapper'], $node, 'ssl_enabled', array(
+  _hosting_site_field($form['hosting_https_wrapper'], $node, 'https_enabled', array(
     '#type' => 'radios',
     '#title' => t('Encryption'),
     '#options' => hosting_https_status_options(),
     '#description' => t('Enabling encryption will publish your site on both HTTP and HTTPS ports, allowing you to redirect users to the more secure version for certain pages that require the additional security. Requiring encryption will automatically redirect all unencrypted traffic to your HTTPS site.'),
     '#required' => TRUE,
-    '#default_value' => (isset($node->ssl_enabled)) ? $node->ssl_enabled : HOSTING_HTTPS_DISABLED,
-    // TODO: Use an alternate permission here. Perhaps "Manage site HTTPS settings."
-    '#access' => user_access('create ssl certificate'),
+    '#default_value' => (isset($node->https_enabled)) ? $node->https_enabled : HOSTING_HTTPS_DISABLED,
+    '#access' => user_access('manage site HTTPS settings'),
   ), 'hosting_https_status_options', $https_available);
 
   // Add our custom validate callback.
@@ -46,8 +45,8 @@ function hosting_https_site_form(&$form, &$form_state, $form_id) {
  * Implements hook_hosting_site_options_alter().
  */
 function hosting_https_hosting_site_options_alter(&$return, $node) {
-  // Test if ssl has been enabled.
-  if (isset($node->ssl_enabled) && $node->ssl_enabled) {
+  // Test if HTTPS has been enabled.
+  if (isset($node->https_enabled) && $node->https_enabled) {
     // we need to ensure that the return value is properly indexed, otherwise it
     // gets interpreted as an object by jquery.
     $return['profile'] = array_values(array_intersect($return['profile'], hosting_https_get_profiles()));
@@ -60,19 +59,18 @@ function hosting_https_hosting_site_options_alter(&$return, $node) {
  * Implements hook_nodeapi_TYPE_OP().
  */
 function hosting_https_nodeapi_site_view(&$node, $teaser = FALSE) {
-  $node->content['info']['ssl_enabled'] = array(
+  $node->content['info']['https_enabled'] = array(
     '#type' => 'item',
     '#title' => t('Encryption'),
-    '#markup' => hosting_https_status_options((isset($node->ssl_enabled)) ? $node->ssl_enabled : HOSTING_HTTPS_DISABLED),
+    '#markup' => hosting_https_status_options((isset($node->https_enabled)) ? $node->https_enabled : HOSTING_HTTPS_DISABLED),
     '#weight' => 6,
   );
 
-  if (isset($node->ssl_enabled) && $node->ssl_enabled == TRUE) {
-    $node->content['info']['ssl_key'] = array(
+  if (isset($node->https_enabled) && $node->https_enabled == TRUE) {
+    $node->content['info']['https_key'] = array(
       '#type' => 'item',
       '#title' => t('Encryption key'),
       '#markup' => hosting_https_output_key($node),
-      '#description' => t("This site is using SSL certificates located at %path.", array('%path' => sprintf("config/ssl.d/%s/", hosting_https_output_key($node)))),
       '#weight' => 7,
     );
   }
@@ -130,13 +128,13 @@ function hosting_https_filter_key($key) {
  * @see hosting_https_site_form().
  */
 function hosting_https_site_form_validate($form, $form_state) {
-  if ($form_state['values']['ssl_enabled']) {
+  if ($form_state['values']['https_enabled']) {
     $node = $form['#node'];
     // Check that the server to host this site has HTTPS enabled.
     if (!empty($node->platform)) {
       $platform = node_load($node->platform);
       $server = node_load($platform->web_server);
-      if (!$server->services['http']->ssl_enabled) {
+      if (!$server->services['http']->https_enabled) {
         $server_name = strlen($server->human_name) ? $server->human_name : $server->title;
         $server_edit_path = 'node/' . $server->nid . '/edit';
         if (drupal_valid_path($server_edit_path, TRUE)) {
@@ -158,8 +156,8 @@ function hosting_https_site_form_validate($form, $form_state) {
  * Implements hook_nodeapi_TYPE_OP().
  */
 function hosting_https_nodeapi_site_presave(&$node) {
-  if (!isset($node->ssl_enabled)) {
-    $node->ssl_enabled = HOSTING_HTTPS_DISABLED;
+  if (!isset($node->https_enabled)) {
+    $node->https_enabled = HOSTING_HTTPS_DISABLED;
   }
 }
 
@@ -171,7 +169,7 @@ function hosting_https_nodeapi_site_insert($node) {
     ->fields(array(
       'vid' => $node->vid,
       'nid' => $node->nid,
-      'ssl_enabled' => $node->ssl_enabled,
+      'https_enabled' => $node->https_enabled,
     ))
     ->execute();
 }
@@ -181,14 +179,14 @@ function hosting_https_nodeapi_site_insert($node) {
  */
 function hosting_https_nodeapi_site_update($node) {
   // Check if there's existing record.
-  $result = db_query("SELECT ssl_enabled FROM {hosting_https_site} WHERE vid = :vid", array(':vid' => $node->vid));
+  $result = db_query("SELECT https_enabled FROM {hosting_https_site} WHERE vid = :vid", array(':vid' => $node->vid));
   if (!($obj = $result->fetch())) {
     hosting_https_nodeapi_site_insert($node);
   }
   else {
     db_update('hosting_https_site')
       ->fields(array(
-        'ssl_enabled' => $node->ssl_enabled,
+        'https_enabled' => $node->https_enabled,
       ))
       ->condition('vid', $node->vid)
       ->execute();
@@ -200,12 +198,12 @@ function hosting_https_nodeapi_site_update($node) {
  */
 function hosting_https_node_load($nodes, $types) {
   foreach ($nodes as $nid => $node) {
-    $result = db_query("SELECT ssl_enabled FROM {hosting_https_site} WHERE vid = :vid",
+    $result = db_query("SELECT https_enabled FROM {hosting_https_site} WHERE vid = :vid",
       array(':vid' => $node->vid)
       )->fetchObject();
     if ($result) {
-      $nodes[$nid]->ssl_enabled = $result->ssl_enabled;
-      $nodes[$nid]->ssl_key = hosting_https_get_key($node);
+      $nodes[$nid]->https_enabled = $result->https_enabled;
+      $nodes[$nid]->https_key = hosting_https_get_key($node);
     }
   }
 }

@@ -1,4 +1,4 @@
-NameVirtualHost <?php print "*:" . $http_ssl_port . "\n"; ?>
+NameVirtualHost <?php print "*:" . $https_port . "\n"; ?>
 
 <IfModule !ssl_module>
   LoadModule ssl_module modules/mod_ssl.so
@@ -6,10 +6,10 @@ NameVirtualHost <?php print "*:" . $http_ssl_port . "\n"; ?>
 
 <VirtualHost *:443>
   SSLEngine on
-  SSLCertificateFile <?php print $ssl_cert . "\n"; ?>
-  SSLCertificateKeyFile <?php print $ssl_cert_key . "\n"; ?>
-<?php if (!empty($ssl_chain_cert)) : ?>
-  SSLCertificateChainFile <?php print $ssl_chain_cert . "\n"; ?>
+  SSLCertificateFile <?php print $https_cert . "\n"; ?>
+  SSLCertificateKeyFile <?php print $https_cert_key . "\n"; ?>
+<?php if (!empty($https_chain_cert)) : ?>
+  SSLCertificateChainFile <?php print $https_chain_cert . "\n"; ?>
 <?php endif; ?>
   ServerName default
   Redirect 404 /

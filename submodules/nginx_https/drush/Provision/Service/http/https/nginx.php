@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Nginx SSL service class.
+ * Nginx HTTPS service class.
  *
  * This class doesn't extend the nginx service itself, so there may
  * be some duplication of code between them. The majority of the
@@ -20,7 +20,7 @@ class Provision_Service_http_https_nginx extends Provision_Service_http_https {
     return Provision_Service_http_nginx::nginx_restart_cmd();
   }
 
-  public $ssl_enabled = TRUE;
+  public $https_enabled = TRUE;
 
   function cloaked_db_creds() {
     return TRUE;

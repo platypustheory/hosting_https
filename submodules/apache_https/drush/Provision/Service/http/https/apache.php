@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Apache SSL service class.
+ * Apache HTTPS service class.
  *
  * This class doesn't extend the apache service itself, so there may
  * be some duplication of code between them. The majority of the 
@@ -19,7 +19,7 @@ class Provision_Service_http_https_apache extends Provision_Service_http_https {
     return Provision_Service_http_apache::apache_restart_cmd();
   } 
 
-  public $ssl_enabled = TRUE;
+  public $https_enabled = TRUE;
 
   function cloaked_db_creds() {
     return TRUE;
@@ -28,7 +28,7 @@ class Provision_Service_http_https_apache extends Provision_Service_http_https {
   /**
    * Initialize the configuration files.
    *
-   * These config classes are a mix of the SSL and Non-SSL apache
+   * These config classes are a mix of the HTTPS and Non-HTTPS apache
    * classes. In some cases they extend the Apache classes too.
    */
   function init_server() {

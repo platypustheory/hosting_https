@@ -1,7 +1,7 @@
 <?php include(provision_class_directory('Provision_Config_Nginx_Server') . '/server.tpl.php'); ?>
 
 #######################################################
-###  nginx default ssl server
+###  nginx default HTTPS server
 #######################################################
 
 <?php
@@ -14,7 +14,7 @@ if (!$satellite_mode && $server->satellite_mode) {
 
 server {
 
-  listen       <?php print '*:' . $http_ssl_port; ?>;
+  listen       <?php print '*:' . $https_port; ?>;
   server_name  _;
   location / {
 <?php if ($satellite_mode == 'boa'): /* TODO: Remove BOA-specific settings. Find ways to re-implement them via hooks, etc.*/?>

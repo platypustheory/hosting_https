@@ -1,5 +1,5 @@
 
-<?php if ($this->ssl_enabled && $this->ssl_key) : ?>
+<?php if ($this->https_enabled && $this->https_key) : ?>
 
 <?php
 $satellite_mode = drush_get_option('satellite_mode');
@@ -21,7 +21,7 @@ else {
 ?>
 
 server {
-  listen       <?php print "*:{$http_ssl_port} {$ssl_args}"; ?>;
+  listen       <?php print "*:{$https_port} {$ssl_args}"; ?>;
   server_name  <?php print $this->uri . ' ' . implode(' ', str_replace('/', '.', $this->aliases)); ?>;
 <?php if ($satellite_mode == 'boa'): /* TODO: Remove BOA-specific config. */?>
   root         /var/www/nginx-default;
@@ -31,11 +31,11 @@ server {
   return 302 <?php print $this->platform->server->web_disable_url . '/' . $this->uri ?>;
 <?php endif; ?>
   ssl                        on;
-  ssl_certificate_key        <?php print $ssl_cert_key; ?>;
-<?php if (!empty($ssl_chain_cert)) : ?>
-  ssl_certificate            <?php print $ssl_chain_cert; ?>;
+  ssl_certificate_key        <?php print $https_cert_key; ?>;
+<?php if (!empty($https_chain_cert)) : ?>
+  ssl_certificate            <?php print $https_chain_cert; ?>;
 <?php else: ?>
-  ssl_certificate            <?php print $ssl_cert; ?>;
+  ssl_certificate            <?php print $https_cert; ?>;
 <?php endif; ?>
 }
 

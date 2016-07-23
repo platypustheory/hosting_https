@@ -1,7 +1,7 @@
 
-<?php if ($this->ssl_enabled && $this->ssl_key) : ?>
+<?php if ($this->https_enabled && $this->https_key) : ?>
 
-  <VirtualHost <?php print "*:{$http_ssl_port}"; ?>>
+  <VirtualHost <?php print "*:{$https_port}"; ?>>
   <?php if ($this->site_mail) : ?>
     ServerAdmin <?php  print $this->site_mail; ?>
   <?php endif;?>
@@ -33,12 +33,12 @@ if (!$aegir_root && $server->aegir_root) {
 
     SSLEngine on
 
-    SSLCertificateFile <?php print $ssl_cert; ?>
+    SSLCertificateFile <?php print $https_cert; ?>
 
-    SSLCertificateKeyFile <?php print $ssl_cert_key; ?>
+    SSLCertificateKeyFile <?php print $https_cert_key; ?>
 
-  <?php if (!empty($ssl_chain_cert)) : ?>
-    SSLCertificateChainFile <?php print $ssl_chain_cert; ?>
+  <?php if (!empty($https_chain_cert)) : ?>
+    SSLCertificateChainFile <?php print $https_chain_cert; ?>
   <?php endif; ?>
 
 <?php

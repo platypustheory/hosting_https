@@ -23,7 +23,7 @@ function hosting_https_schema() {
         'not null' => TRUE,
         'default' => 0,
       ),
-      'ssl_port' => array(
+      'https_port' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
@@ -47,7 +47,7 @@ function hosting_https_schema() {
         'not null' => TRUE,
         'default' => 0,
       ),
-      'ssl_enabled' => array(
+      'https_enabled' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
@@ -61,7 +61,7 @@ function hosting_https_schema() {
 }
 
 /**
- * Remove SSL service records from hosting_service table.
+ * Remove HTTPS service records from hosting_service table.
  */
 function hosting_https_uninstall() {
   db_delete('hosting_service')

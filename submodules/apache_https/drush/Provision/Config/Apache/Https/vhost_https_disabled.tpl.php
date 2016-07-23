@@ -1,6 +1,6 @@
-<?php if ($this->ssl_enabled && $this->ssl_key) : ?>
+<?php if ($this->https_enabled && $this->https_key) : ?>
 
-  <VirtualHost <?php print "*:{$http_ssl_port}"; ?>>
+  <VirtualHost <?php print "*:{$https_port}"; ?>>
   <?php if ($this->site_mail) : ?>
     ServerAdmin <?php  print $this->site_mail; ?> 
   <?php endif;?>
@@ -9,13 +9,13 @@
       
     ServerName <?php print $this->uri; ?>
 
-    # Enable SSL handling.
+    # Enable HTTPS handling.
      
     SSLEngine on
 
-    SSLCertificateFile <?php print $ssl_cert; ?>
+    SSLCertificateFile <?php print $https_cert; ?>
 
-    SSLCertificateKeyFile <?php print $ssl_cert_key; ?>
+    SSLCertificateKeyFile <?php print $https_cert_key; ?>
 
 <?php
 if (sizeof($this->aliases)) {

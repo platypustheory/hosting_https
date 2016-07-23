@@ -27,8 +27,8 @@ include_once 'hosting_https.nodeapi.inc';
  */
 function hosting_https_permission() {
   return array(
-    'create HTTPS certificate' => array(
-      'title' => t('Create HTTPS certificate.'),
+    'manage site HTTPS settings' => array(
+      'title' => t('Manage site HTTPS settings.'),
     ),
   );
 }
@@ -41,7 +41,7 @@ function hosting_https_get_servers() {
   $https_servers = array();
   foreach ($servers as $nid => $title) {
     $node = node_load($nid);
-    if ($node->services['http']->ssl_enabled) {
+    if ($node->services['http']->https_enabled) {
       $https_servers[] = $nid;
     }
   }
@@ -96,6 +96,6 @@ function hosting_https_form_alter(&$form, &$form_state, $form_id) {
  * @see: hosting_example_hosting_feature().
  */
 function hosting_https_feature_enable_callback() {
-  drupal_set_message(t("Please make sure you have enabled SSL support in your webserver, e.g. by enabling mod_ssl in Apache."));
-  drupal_set_message(t("To start using SSL please edit the desired server node within Aegir to set in from e.g. 'apache' to 'apache_https'."));
+  drupal_set_message(t("Please make sure you have enabled HTTPS support in your webserver, e.g. by enabling mod_ssl in Apache."));
+  drupal_set_message(t("To start using HTTPS please edit the desired server node within Aegir to set it from e.g. 'apache' to 'apache_https'."));
 }

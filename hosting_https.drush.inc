@@ -10,15 +10,15 @@
 function hosting_https_hosting_site_context_options(&$task) {
   $node = $task->ref;
 
-  if (isset($node->ssl_enabled)) {
+  if (isset($node->https_enabled)) {
     // we pass null to disable the option.
-    $task->context_options['ssl_enabled'] = ($node->ssl_enabled) ? $node->ssl_enabled : 'null';
+    $task->context_options['https_enabled'] = ($node->https_enabled) ? $node->https_enabled : 'null';
 
-    if ($node->ssl_enabled) {
-      $task->context_options['ssl_key'] = hosting_https_get_key($node);
+    if ($node->https_enabled) {
+      $task->context_options['https_key'] = hosting_https_get_key($node);
     }
     else {
-      $task->context_options['ssl_key'] = 'null';
+      $task->context_options['https_key'] = 'null';
     }
   }
 }

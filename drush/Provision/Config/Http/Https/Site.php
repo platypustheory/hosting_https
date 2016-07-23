@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Base class for SSL enabled virtual hosts.
+ * Base class for HTTPS enabled virtual hosts.
  *
  * This class primarily abstracts the process of making sure the relevant keys
  * are synched to the server when the config files that use them get created.
@@ -15,30 +15,30 @@ class Provision_Config_Http_Https_Site extends Provision_Config_Http_Site {
   function write() {
     parent::write();
 
-    if ($this->ssl_enabled && $this->ssl_key) {
-      $path = dirname($this->data['ssl_cert']);
+    if ($this->https_enabled && $this->https_key) {
+      $path = dirname($this->data['https_cert']);
       // Make sure the ssl.d directory in the server ssl.d exists. 
       provision_file()->create_dir($path, 
-      dt("SSL Certificate directory for %key on %server", array(
-        '%key' => $this->ssl_key,
+      dt("HTTPS Certificate directory for %key on %server", array(
+        '%key' => $this->https_key,
         '%server' => $this->data['server']->remote_host,
       )), 0700);
 
       // Copy the certificates to the server's ssl.d directory.
       provision_file()->copy(
-        $this->data['ssl_cert_source'],
-        $this->data['ssl_cert'])
-        || drush_set_error('SSL_CERT_COPY_FAIL', dt('failed to copy SSL certificate in place'));
+        $this->data['https_cert_source'],
+        $this->data['https_cert'])
+        || drush_set_error('HTTPS_CERT_COPY_FAIL', dt('failed to copy HTTPS certificate in place'));
       provision_file()->copy(
-        $this->data['ssl_cert_key_source'],
-        $this->data['ssl_cert_key'])
-        || drush_set_error('SSL_KEY_COPY_FAIL', dt('failed to copy SSL key in place'));
+        $this->data['https_cert_key_source'],
+        $this->data['https_cert_key'])
+        || drush_set_error('HTTPS_KEY_COPY_FAIL', dt('failed to copy HTTPS key in place'));
       // Copy the chain certificate, if it is set.
-      if (!empty($this->data['ssl_chain_cert_source'])) {
+      if (!empty($this->data['https_chain_cert_source'])) {
 	      provision_file()->copy(
-          $this->data['ssl_chain_cert_source'],
-          $this->data['ssl_chain_cert'])
-        || drush_set_error('SSL_CHAIN_COPY_FAIL', dt('failed to copy SSL certficate chain in place'));
+          $this->data['https_chain_cert_source'],
+          $this->data['https_chain_cert'])
+        || drush_set_error('HTTPS_CHAIN_COPY_FAIL', dt('failed to copy HTTPS certficate chain in place'));
       }
       // Sync the key directory to the remote server.
       $this->data['server']->sync($path);
@@ -51,9 +51,9 @@ class Provision_Config_Http_Https_Site extends Provision_Config_Http_Site {
   function unlink() {
     parent::unlink();
 
-    if ($this->ssl_enabled) {
+    if ($this->https_enabled) {
       // TODO: Delete the certificate. Presumably this should look something like:
-      // $this->server->service('Certificate')->delete_certificates($this->ssl_key);
+      // $this->server->service('Certificate')->delete_certificates($this->https_key);
     }
   }
   

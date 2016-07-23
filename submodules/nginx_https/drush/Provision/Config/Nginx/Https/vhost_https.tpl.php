@@ -1,5 +1,5 @@
 
-<?php if ($this->ssl_enabled && $this->ssl_key) : ?>
+<?php if ($this->https_enabled && $this->https_key) : ?>
 
 <?php
 $satellite_mode = drush_get_option('satellite_mode');
@@ -23,7 +23,7 @@ else {
 <?php if ($this->redirection): ?>
 <?php foreach ($this->aliases as $alias_url): ?>
 server {
-  listen       <?php print "*:{$http_ssl_port} {$ssl_args}"; ?>;
+  listen       <?php print "*:{$https_port} {$ssl_args}"; ?>;
 <?php
   // if we use redirections, we need to change the redirection
   // target to be the original site URL ($this->uri instead of
@@ -38,11 +38,11 @@ server {
   }
 ?>
   ssl                        on;
-  ssl_certificate_key        <?php print $ssl_cert_key; ?>;
-<?php if (!empty($ssl_chain_cert)) : ?>
-  ssl_certificate            <?php print $ssl_chain_cert; ?>;
+  ssl_certificate_key        <?php print $https_cert_key; ?>;
+<?php if (!empty($https_chain_cert)) : ?>
+  ssl_certificate            <?php print $https_chain_cert; ?>;
 <?php else: ?>
-  ssl_certificate            <?php print $ssl_cert; ?>;
+  ssl_certificate            <?php print $https_cert; ?>;
 <?php endif; ?>
   return 301 $scheme://<?php print $this->redirection; ?>$request_uri;
 }
@@ -85,7 +85,7 @@ server {
   }
 ?>
   fastcgi_param db_port   <?php print urlencode($db_port); ?>;
-  listen        <?php print "*:{$http_ssl_port} {$ssl_args}"; ?>;
+  listen        <?php print "*:{$https_port} {$ssl_args}"; ?>;
   server_name   <?php
     // this is the main vhost, so we need to put the redirection
     // target as the hostname (if it exists) and not the original URL
@@ -104,11 +104,11 @@ server {
     } ?>;
   root          <?php print "{$this->root}"; ?>;
   ssl                        on;
-  ssl_certificate_key        <?php print $ssl_cert_key; ?>;
-<?php if (!empty($ssl_chain_cert)) : ?>
-  ssl_certificate            <?php print $ssl_chain_cert; ?>;
+  ssl_certificate_key        <?php print $https_cert_key; ?>;
+<?php if (!empty($https_chain_cert)) : ?>
+  ssl_certificate            <?php print $https_chain_cert; ?>;
 <?php else: ?>
-  ssl_certificate            <?php print $ssl_cert; ?>;
+  ssl_certificate            <?php print $https_cert; ?>;
 <?php endif; ?>
 <?php print $extra_config; ?>
   include                    <?php print $server->include_path; ?>/nginx_vhost_common.conf;

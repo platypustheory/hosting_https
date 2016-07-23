@@ -40,6 +40,8 @@ function certificate_provision_services() {
  * Implements drush_HOOK_COMMAND().
  */
 function drush_certificate_provision_verify() {
-  d()->service('Certificate')->verify();
+  if (array_key_exists('Certificate', d()->get_services())) {
+    d()->service('Certificate')->verify();
+  }
 }
 

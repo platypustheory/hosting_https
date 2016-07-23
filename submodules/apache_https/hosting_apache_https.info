@@ -1,5 +1,5 @@
 name = Aegir HTTPS Apache
-description = Adds Apache support to Aegir HTTPS.
+description = A service to support the Apache web server with HTTPS functionality.
 package = Aegir HTTPS
 dependencies[] = hosting_https
 dependencies[] = hosting_web_server

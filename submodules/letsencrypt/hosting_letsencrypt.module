@@ -30,3 +30,12 @@ function hosting_letsencrypt_feature_disable_callback() {
   drupal_set_message(t("The 'LetsEncrypt' feature's <strong>disable</strong> callback was just called."));
 }
 
+/**
+ * Implements hook_system_info_alter().
+ */
+function hosting_letsencrypt_system_info_alter(&$info, $file, $type) {
+  if ($type == 'module' && $file->name == 'hosting_letsencrypt') {
+    hosting_certificate_prevent_orphaned_services($info, 'Certificate', 'LetsEncrypt');
+  }
+}
+

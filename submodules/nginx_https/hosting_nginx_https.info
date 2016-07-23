@@ -1,5 +1,5 @@
 name = Aegir HTTPS Nginx
-description = Adds Nginx support to Aegir HTTPS.
+description = A service to support the NGINX web server with HTTPS functionality.
 package = Aegir HTTPS
 dependencies[] = hosting_https
 dependencies[] = hosting_nginx

@@ -12,9 +12,10 @@
  * will be disabled.
  */
 function hosting_letsencrypt_hosting_feature() {
+  $modules = system_rebuild_module_data();
   $features['letsencrypt'] = array(
     'title' => t("Let's Encrypt service"),
-    'description' => t("Let's Encrypt service to generate HTTPS certificates for Aegir-hosted sites."),
+    'description' => $modules['hosting_letsencrypt']->info['description'],
     'status' => HOSTING_FEATURE_DISABLED,
     'module' => 'hosting_letsencrypt',
     // Callback functions to execute on enabling or disabling this feature

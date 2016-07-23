@@ -12,3 +12,12 @@ function hosting_apache_https_hosting_service() {
   );
 }
 
+/**
+ * Implements hook_system_info_alter().
+ */
+function hosting_apache_https_system_info_alter(&$info, $file, $type) {
+  if ($type == 'module' && $file->name == 'hosting_https_apache') {
+    hosting_certificate_prevent_orphaned_services($info, 'http', 'apache_https');
+  }
+}
+

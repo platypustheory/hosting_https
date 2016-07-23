@@ -6,6 +6,8 @@
 class Provision_Service_Certificate_SelfSigned extends Provision_Service_Certificate {
   public $service = 'SelfSigned';
 
+  public $can_generate_default = TRUE;
+
   /**
    * Initialize this class, including option handling.
    */

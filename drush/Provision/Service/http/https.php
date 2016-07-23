@@ -48,10 +48,12 @@ class Provision_Service_http_https extends Provision_Service_http_public {
     $data['https_port'] = $this->server->https_port;
 
     if ($config == 'server') {
-      // Generate a certificate for the default HTTPS vhost, and retrieve the
-      // path to the cert and key files. It will be generated if not found.
-      $certs = $this->server->service('Certificate')->get_certificates('default');
-      $data = array_merge($data, $certs);
+      if ($this->server->service('Certificate')->can_generate_default) {
+        // Generate a certificate for the default HTTPS vhost, and retrieve the
+        // path to the cert and key files. It will be generated if not found.
+        $certs = $this->server->service('Certificate')->get_certificates('default');
+        $data = array_merge($data, $certs);
+      }
     }
 
     if ($config == 'site' && $this->context->https_enabled) {

@@ -6,6 +6,9 @@
 class Provision_Service_Certificate extends Provision_Service {
   public $service = 'Certificate';
 
+  // Whether the certificate can generate a default server certificate.
+  public $can_generate_default = FALSE;
+
   /**
    * Called on provision-verify.
    */

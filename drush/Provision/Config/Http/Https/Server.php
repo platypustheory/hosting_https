@@ -7,10 +7,14 @@ class Provision_Config_Http_Https_Server extends Provision_Config_Http_Server {
   public $template = 'server_https.tpl.php';
   public $description = 'encryption enabled webserver configuration';
 
+  function can_generate_default() {
+    return $this->server->service('Certificate')->can_generate_default;
+  }
+
   function write() {
     parent::write();
 
-    if ($this->https_enabled && $this->https_key) {
+    if ($this->https_enabled && $this->https_key && $this->can_generate_default()) {
       $path = dirname($this->data['https_cert']);
       // Make sure the ssl.d directory in the server ssl.d exists.
       provision_file()->create_dir($path,

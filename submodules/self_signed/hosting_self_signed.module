@@ -30,3 +30,12 @@ function hosting_self_signed_feature_disable_callback() {
   drupal_set_message(t("The 'SelfSigned' feature's <strong>disable</strong> callback was just called."));
 }
 
+/**
+ * Implements hook_system_info_alter().
+ */
+function hosting_self_signed_system_info_alter(&$info, $file, $type) {
+  if ($type == 'module' && $file->name == 'hosting_self_signed') {
+    hosting_certificate_prevent_orphaned_services($info, 'Certificate', 'SelfSigned');
+  }
+}
+

@@ -12,9 +12,10 @@
  * will be disabled.
  */
 function hosting_self_signed_hosting_feature() {
+  $modules = system_rebuild_module_data();
   $features['self_signed'] = array(
     'title' => t('Self-signed service'),
-    'description' => t('Self-signed service to generate HTTPS self_signed certificates for Aegir-hosted sites.'),
+    'description' => $modules['hosting_self_signed']->info['description'],
     'status' => HOSTING_FEATURE_DISABLED,
     'module' => 'hosting_self_signed',
     // Callback functions to execute on enabling or disabling this feature

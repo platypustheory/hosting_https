@@ -7,6 +7,7 @@ module_load_include('service.inc', 'hosting_https');
 
 class hostingService_http_https_apache extends hostingService_https {
   public $type = 'https_apache';
+  public $name = 'Apache HTTPS';
 
   protected $has_restart_cmd = TRUE;
 

@@ -11,6 +11,7 @@
 class hostingService_Certificate_SelfSigned extends hostingService_Certificate {
 
   public $type = 'SelfSigned';
+  public $name = 'Self Signed';
 
   protected $self_signed_field = 'default';
 

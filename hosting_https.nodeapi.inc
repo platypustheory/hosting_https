@@ -20,7 +20,14 @@ function hosting_https_site_form(&$form, &$form_state, $form_id) {
       $https_available = TRUE;
     }
   }
-  
+  elseif (count(hosting_https_get_servers('http')) > 0) {
+    $ssl_available = TRUE;
+  }
+
+  if (!$ssl_available) {
+    return;
+  }
+
   _hosting_site_field($form, $node, 'hosting_https_wrapper', array(
     '#type' => 'fieldset',
     '#title' => t('HTTPS Settings'),

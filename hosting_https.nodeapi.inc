@@ -21,10 +21,10 @@ function hosting_https_site_form(&$form, &$form_state, $form_id) {
     }
   }
   elseif (count(hosting_https_get_servers('http')) > 0) {
-    $ssl_available = TRUE;
+    $https_available = TRUE;
   }
 
-  if (!$ssl_available) {
+  if (!$https_available) {
     return;
   }
 

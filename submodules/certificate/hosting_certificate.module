@@ -39,7 +39,7 @@ function hosting_certificate_feature_disable_callback() {
  * service enabled.
  */
 function hosting_certificate_prevent_orphaned_services(&$info, $service, $type) {
-  $servers = hosting_get_servers($service);
+  $servers = hosting_get_servers($service, FALSE);
   $to_disable = array();
   foreach ($servers as $nid => $name) {
     $server = node_load($nid);

@@ -77,6 +77,9 @@ if ($this->redirection) {
         <IfModule mod_php5.c>
           php_flag engine off
         </IfModule>
+        <IfModule mod_php7.c>
+          php_flag engine off
+        </IfModule>
       </Directory>
 
     # Prevent direct reading of files in the private dir.
@@ -92,6 +95,9 @@ if ($this->redirection) {
 
       # If we know how to do it safely, disable the PHP engine entirely.
       <IfModule mod_php5.c>
+        php_flag engine off
+      </IfModule>
+      <IfModule mod_php7.c>
         php_flag engine off
       </IfModule>
     </Directory>

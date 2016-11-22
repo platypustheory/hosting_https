@@ -120,7 +120,7 @@ class Provision_Service_Certificate_LetsEncrypt extends Provision_Service_Certif
     $config_path = d()->server->letsencrypt_config_path;
     $uri = d()->uri;
     drush_log(dt("Generating Let's Encrypt certificates."));
-    $result = drush_shell_exec("{$script_path}/letsencrypt.sh -c -f {$script_path}/{$config_file} --out {$config_path} -d {$uri} -x");
+    $result = drush_shell_exec("{$script_path}/script -c -f {$script_path}/{$config_file} --out {$config_path} -d {$uri} -x");
     foreach (drush_shell_exec_output() as $line) {
       drush_log($line);
     }

@@ -67,16 +67,17 @@ Alias /.well-known/acme-challenge {$challenge_path}
  * Implements hook_provision_nginx_server_config().
  *
  * @see https://github.com/lukas2511/dehydrated/blob/master/docs/wellknown.md
- * @TODO: Test this.
  */
 function letsencrypt_provision_nginx_server_config($data) {
   if (d()->Certificate_service_type == 'LetsEncrypt' && $challenge_path = d()->letsencrypt_challenge_path) {
     $challenge_path = d()->letsencrypt_challenge_path;
     drush_log(dt("Injecting Let's Encrypt 'well-known' ACME challenge directory ':path' vhost entry.", array(':path' => $challenge_path)));
     return "
+server {
   location /.well-known/acme-challenge {
-    alias {$challenge_path}
+    alias {$challenge_path};
   }
+}
 ";
   }
 }

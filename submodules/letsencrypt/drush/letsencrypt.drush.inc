@@ -36,7 +36,7 @@ function letsencrypt_provision_services() {
 /**
  * Implements hook_provision_apache_server_config().
  *
- * @see https://github.com/lukas2511/letsencrypt.sh/blob/master/docs/wellknown.md
+ * @see https://github.com/lukas2511/dehydrated/blob/master/docs/wellknown.md
  */
 function letsencrypt_provision_apache_server_config($data) {
   if (d()->Certificate_service_type == 'LetsEncrypt' && $challenge_path = d()->letsencrypt_challenge_path) {
@@ -66,7 +66,7 @@ Alias /.well-known/acme-challenge {$challenge_path}
 /**
  * Implements hook_provision_nginx_server_config().
  *
- * @see https://github.com/lukas2511/letsencrypt.sh/blob/master/docs/wellknown.md
+ * @see https://github.com/lukas2511/dehydrated/blob/master/docs/wellknown.md
  * @TODO: Test this.
  */
 function letsencrypt_provision_nginx_server_config($data) {

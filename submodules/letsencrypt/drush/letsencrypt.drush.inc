@@ -39,8 +39,11 @@ function letsencrypt_provision_services() {
  * @see https://github.com/lukas2511/dehydrated/blob/master/docs/wellknown.md
  */
 function letsencrypt_provision_apache_vhost_config($uri, $data) {
-  $server = d('@server_master');
+  if (d()->type != 'site') {
+    return '';
+  }
 
+  $server = d('@server_master');
   if (($server->Certificate_service_type == 'LetsEncrypt') && ($challenge_path = $server->letsencrypt_challenge_path)) {
     drush_log(dt("Injecting Let's Encrypt 'well-known' ACME challenge directory ':path' into Apache vhost entry.", array(
       ':path' => $challenge_path,
@@ -76,8 +79,11 @@ function letsencrypt_provision_apache_vhost_config($uri, $data) {
  * @see https://github.com/lukas2511/dehydrated/blob/master/docs/wellknown.md
  */
 function letsencrypt_provision_nginx_vhost_config($uri, $data) {
-  $server = d('@server_master');
+  if (d()->type != 'site') {
+    return '';
+  }
 
+  $server = d('@server_master');
   if (($server->Certificate_service_type == 'LetsEncrypt') && ($challenge_path = $server->letsencrypt_challenge_path)) {
     drush_log(dt("Injecting Let's Encrypt 'well-known' ACME challenge directory ':path' into Nginx vhost entry.", array(
       ':path' => $challenge_path,

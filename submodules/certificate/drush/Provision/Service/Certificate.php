@@ -32,25 +32,13 @@ class Provision_Service_Certificate extends Provision_Service {
   /**
    * Retrieve an array containing the actual files for this https_key.
    *
-   * If the files could not be found, this function will proceed to generate
-   * certificates for the current site, so that the operation can complete
-   * succesfully.
+   * Always attempt to generate new certificates.  The upstream script should
+   * recognize non-expired ones, and leave them in place.  So it checks for
+   * us.  We don't need to check which ones are still valid.
    */
   function get_certificates($https_key) {
-    $certs = $this->get_certificate_paths($https_key);
-
-    foreach ($certs as $cert) {
-      $exists = provision_file()->exists($cert)->status();
-      if (!$exists) {
-        // if any of the files don't exist, regenerate them.
-        $this->generate_certificates($https_key);
-
-        // break out of the loop.
-        break;
-      }
-    }
-
-    return $certs;
+    $this->generate_certificates($https_key);
+    return $this->get_certificate_paths($https_key);
   }
 
   /**

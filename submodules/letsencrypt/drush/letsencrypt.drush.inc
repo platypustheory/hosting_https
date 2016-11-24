@@ -34,32 +34,39 @@ function letsencrypt_provision_services() {
 }
 
 /**
- * Implements hook_provision_apache_server_config().
+ * Implements hook_provision_apache_vhost_config().
  *
  * @see https://github.com/lukas2511/dehydrated/blob/master/docs/wellknown.md
  */
-function letsencrypt_provision_apache_server_config($data) {
-  if (d()->Certificate_service_type == 'LetsEncrypt' && $challenge_path = d()->letsencrypt_challenge_path) {
-    drush_log(dt("Injecting Let's Encrypt 'well-known' ACME challenge directory ':path' vhost entry.", array(':path' => $challenge_path)));
-    return "
-Alias /.well-known/acme-challenge {$challenge_path}
+function letsencrypt_provision_apache_vhost_config($uri, $data) {
+  $server = d('@server_master');
 
-<Directory {$challenge_path}>
-        Options None
-        AllowOverride None
+  if (($server->Certificate_service_type == 'LetsEncrypt') && ($challenge_path = $server->letsencrypt_challenge_path)) {
+    drush_log(dt("Injecting Let's Encrypt 'well-known' ACME challenge directory ':path' into Apache vhost entry.", array(
+      ':path' => $challenge_path,
+    )));
 
-        # Apache 2.x
-        <IfModule !mod_authz_core.c>
-                Order allow,deny
-                Allow from all
-        </IfModule>
-
-        # Apache 2.4
-        <IfModule mod_authz_core.c>
-                Require all granted
-        </IfModule>
-</Directory>
-";
+    $lines = array();
+    $lines[] = "  # Allow access to letsencrypt.org ACME challenges directory.";
+    $lines[] = "  Alias /.well-known/acme-challenge {$challenge_path}";
+    $lines[] = "";
+    $lines[] = "  <Directory {$challenge_path}>";
+    $lines[] = "    Options None";
+    $lines[] = "    AllowOverride None";
+    $lines[] = "";
+    $lines[] = "    # Apache 2.x";
+    $lines[] = "    <IfModule !mod_authz_core.c>";
+    $lines[] = "      Order allow,deny";
+    $lines[] = "      Allow from all";
+    $lines[] = "    </IfModule>";
+    $lines[] = "";
+    $lines[] = "    # Apache 2.4";
+    $lines[] = "    <IfModule mod_authz_core.c>";
+    $lines[] = "      Require all granted";
+    $lines[] = "    </IfModule>";
+    $lines[] = "  </Directory>";
+    $lines[] = "\n";
+    return implode("\n", $lines);
   }
 }
 
@@ -72,7 +79,7 @@ function letsencrypt_provision_nginx_vhost_config($uri, $data) {
   $server = d('@server_master');
 
   if (($server->Certificate_service_type == 'LetsEncrypt') && ($challenge_path = $server->letsencrypt_challenge_path)) {
-    drush_log(dt("Injecting Let's Encrypt 'well-known' ACME challenge directory ':path' vhost entry.", array(
+    drush_log(dt("Injecting Let's Encrypt 'well-known' ACME challenge directory ':path' into Nginx vhost entry.", array(
       ':path' => $challenge_path,
     )));
 

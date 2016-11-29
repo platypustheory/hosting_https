@@ -80,6 +80,12 @@ function hosting_lets_encrypt_queue($count) {
        '%id' => $site_id,
       )));
     }
+    else {
+      watchdog('hosting_letsencrypt', t('Certificate renewal: Failed to queue Verify task for site %site with ID %id', array(
+       '%site' => node_load($site_id)->title,
+       '%id' => $site_id,
+      )));
+    }
   }
 }
 

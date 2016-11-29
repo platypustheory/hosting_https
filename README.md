@@ -33,6 +33,10 @@ It provides a cleaner, more sustainable and more extensible implementation that 
 4. Save the form.
 5. Repeat these steps for any other sites for which you'd like to enable HTTPS.
 
+## Certificate Renewals
+
+For the Let's Encrypt certificate service, this should get done automatically via the Let's Encrypt queue.  It will run a Verify task on each site every week as site verification is where certificates get renewed if needed.  The seven-day default was chosen to match the CA's [rate limits](https://simonecarletti.com/blog/2016/02/things-about-letsencrypt/#rate-limits).
+
 ## Known Issues
 
 See [the issue queue](https://gitlab.com/aegir/hosting_https/issues).

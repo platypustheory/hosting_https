@@ -39,3 +39,70 @@ function hosting_letsencrypt_system_info_alter(&$info, $file, $type) {
   }
 }
 
+/**
+ * Implements hook_hosting_queues().
+ *
+ * Return a list of queues that this module needs to manage.
+ */
+function hosting_letsencrypt_hosting_queues() {
+  $queues = array();
+
+  $queues['lets_encrypt'] = array(
+    'name' => t("Let's Encrypt"),
+    'description' => t("Refresh expiring Let's Encrypt certificates for HTTPS-enabled sites."),
+    'type' => 'batch',
+    'frequency' => strtotime("7 days", 0),
+    'min_threads' => 6,
+    'max_threads' => 12,
+    'threshold' => 100,
+    'total_items' => count(hosting_letsencrypt_get_sites()),
+    'singular' => t('certificate renewal'),
+    'plural' => t('certificate renewals'),
+  );
+
+  return $queues;
+}
+
+
+/**
+ * Implements hosting_QUEUE_TYPE_queue().
+ *
+ * The main queue callback for refreshing Let's Encrypt certificates. We simply
+ * need to run a Verify task on each applicable site, as certificates get
+ * renewed there if they're close to their expiry dates.
+ */
+function hosting_lets_encrypt_queue($count) {
+  foreach (hosting_letsencrypt_get_sites() as $site_id) {
+    if ($task = hosting_add_task($site_id, 'verify')) {
+      watchdog('hosting_letsencrypt', t('Certificate renewal: Queuing Verify task ID %task for site %site with ID %id', array(
+       '%task' => $task->nid,
+       '%site' => node_load($site_id)->title,
+       '%id' => $site_id,
+      )));
+    }
+  }
+}
+
+/**
+ * Fetch HTTPS-enabled site IDs using Let's Encrypt certificates.
+ *
+ * @todo Ensure sites are using the Let's Encrypt service.
+ */
+function hosting_letsencrypt_get_sites() {
+  $sites = array();
+
+  if ($result = db_query('SELECT s.nid '
+    . 'FROM {hosting_site} s, {hosting_https_site} h '
+    . 'WHERE s.nid = h.nid '
+    . 'AND h.https_enabled IN(:https) '
+    . 'AND s.status = :enabled', array(
+        ':https' => array(HOSTING_HTTPS_ENABLED, HOSTING_HTTPS_REQUIRED),
+        ':enabled' => HOSTING_SITE_ENABLED,
+  ))) {
+    while ($row = $result->fetch()) {
+      $sites[] = $row->nid;
+    }
+  }
+
+  return $sites;
+}

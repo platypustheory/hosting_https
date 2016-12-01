@@ -6,14 +6,17 @@ It provides a cleaner, more sustainable and more extensible implementation that 
 
 ## Installation
 
-1. Disable any of the SSL modules (including hosting_le) you may have already enabled.
+1. Cleanup old SSL usage.
+    * Check that the hostmaster site is not set to Encryption: Required. (e.g. on /hosting/c/hostmaster) to avoid locking yourself out.
+    * Edit the server nodes(e.g. /hosting/c/server_master) to not use an SSL service.
+    * Disable any of the SSL modules (including hosting_le) you may have already enabled.
 2. Switch to the directory where you wish to install the module.
-    * cd /var/aegir/hostmaster-7.x-3.8/sites/aegir.dev.hiberdata.com/modules/contrib
+    * cd /var/aegir/hostmaster-7.x-3.8/sites/aegir.example.com/modules/contrib
 3. Download this module.  This command will include the required PHP library.
     * git clone --recursive https://gitlab.com/aegir/hosting_https.git
 4. Surf to Administration » Hosting » Experimental » Aegir HTTPS.
 5. Enable at least one certificate service (e.g. Let's Encrypt or Self-signed).
-6. Enable a Web service (e.g. Apache HTTPS or Nginx HTTPS).
+6. Enable at least one Web serrver service (e.g. Apache HTTPS or Nginx HTTPS).
 7. Save the configuration.
 
 ## Server Set-Up
@@ -35,7 +38,7 @@ It provides a cleaner, more sustainable and more extensible implementation that 
 
 ## Certificate Renewals
 
-For the Let's Encrypt certificate service, this should get done automatically via the Let's Encrypt queue.  It will run a Verify task on each site every week as site verification is where certificates get renewed if needed.  The seven-day default was chosen to match the CA's [rate limits](https://letsencrypt.org/docs/rate-limits/).
+For the Let's Encrypt certificate service, this should get done automatically via the Let's Encrypt queue. It will run a Verify task on each site every week as site verification is where certificates get renewed if needed. The seven-day default was chosen to match the CA's [rate limits](https://letsencrypt.org/docs/rate-limits/).
 
 ## Known Issues
 

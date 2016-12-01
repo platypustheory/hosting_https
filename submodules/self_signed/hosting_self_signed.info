@@ -1,6 +1,7 @@
 name = Aegir Self-signed Service
 description = A service to generate self-signed certificates for Aegir-hosted sites.
 package = Aegir HTTPS
+dependencies[] = hosting_https
 dependencies[] = hosting_certificate
 dependencies[] = hosting_web_server
 

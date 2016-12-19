@@ -30,11 +30,12 @@ It provides a cleaner, more sustainable and more extensible implementation that 
 
 ## Site Set-Up
 
-1. Ensure there's a DNS entry for the site that you'd like HTTPS enabled (unless you have a wildcard entry pointing to your Aegir server).
-2. Surf to the Sites tab, click on the site, and then hit its Edit tab.
-3. In the HTTPS Settings section, choose either Enabled or Required.
-4. Save the form.
-5. Repeat these steps for any other sites for which you'd like to enable HTTPS.
+1. Ensure that there's a DNS entry for the site that you'd like HTTPS enabled (unless already handled by a wildcard entry pointing to your Aegir server).
+2. Verify the site if this hasn't been done since the server was set up with the above steps.  This ensures that the site can respond to the certificate authority's challenge.
+3. Edit the site.
+4. In the HTTPS Settings section, choose either Enabled or Required.
+5. Save the form.
+6. Repeat these steps for any other sites for which you'd like to enable HTTPS.
 
 ## Certificate Renewals
 

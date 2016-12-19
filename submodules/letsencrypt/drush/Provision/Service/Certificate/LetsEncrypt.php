@@ -105,22 +105,12 @@ class Provision_Service_Certificate_LetsEncrypt extends Provision_Service_Certif
       '%https_key' => $https_key
     )), 0700);
 
-    // TODO: If we ever need more granular control, we can generate the config
-    // file instead.
-    switch (d()->server->letsencrypt_ca) {
-      case 'production':
-        $config_file = 'config';
-        break;
-      case 'staging':
-      default:
-        $config_file = 'config.staging';
-    }
-
+    $config_file = $this->getConfigFile(d()->server->letsencrypt_ca);
     $script_path = d()->server->letsencrypt_script_path;
     $config_path = d()->server->letsencrypt_config_path;
-    $uri = d()->uri;
+    $domain_list = $this->getDomainsString(d());
     drush_log(dt("Generating Let's Encrypt certificates."));
-    $result = drush_shell_exec("{$script_path}/script -c -f {$script_path}/{$config_file} --out {$config_path} -d {$uri}");
+    $result = drush_shell_exec("{$script_path}/script -c -f {$script_path}/{$config_file} --out {$config_path} {$domain_list}");
     foreach (drush_shell_exec_output() as $line) {
       drush_log($line);
     }
@@ -130,6 +120,43 @@ class Provision_Service_Certificate_LetsEncrypt extends Provision_Service_Certif
     else {
       drush_log(dt("Failed to generate Let's Encrypt certificates."), 'warning');
     }
+  }
+
+  /**
+   * Fetches the configuration file for specified environment.
+   *
+   * @param string $environment
+   *   Either 'staging' or 'production'.
+   *
+   * @todo: If we ever need more granular control, we can generate the config
+   *   file instead.
+   */
+  protected function getConfigFile($environment) {
+    if ($environment == 'production') {
+      return 'config';
+    }
+    return 'config.staging';
+  }
+
+  /**
+   * Returns a string specifying the site names we'd like on the certificate.
+   *
+   * An example would be "-d example.com -d www.example.com" where the former is
+   * the canonical name, and the latter is one possible alternate name.
+   */
+  protected function getDomainsString($context) {
+    $canonical_name = $context->uri;
+    $options_list = array("-d {$canonical_name}");
+
+    if (isset($context->aliases)) {
+      foreach ($context->aliases as $alias) {
+        if (!in_array("-d {$alias}", $options_list)) {
+          $options_list[] = "-d {$alias}";
+        }
+      }
+    }
+
+    return implode(" ", $options_list);
   }
 
   /**

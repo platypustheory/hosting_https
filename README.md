@@ -4,6 +4,10 @@ This module enables HTTPS support for sites within the [Aegir Hosting System](ht
 
 It provides a cleaner, more sustainable and more extensible implementation that what's currently offered in Aegir SSL within Aegir core, and doesn't require workarounds such as [hosting_le](https://github.com/omega8cc/hosting_le).
 
+## Requirements
+
+1. Aegir 3.9+ or the patch from [Remove 'node_access' check from default hosting_get_servers() calls](https://www.drupal.org/node/2824329#comment-11772591).  See [hosting_certificate_prevent_orphaned_services() causing recursive/loop cache rebuild](https://gitlab.com/aegir/hosting_https/issues/7) for details.
+
 ## Installation
 
 1. Cleanup old SSL usage.
@@ -13,7 +17,7 @@ It provides a cleaner, more sustainable and more extensible implementation that 
 2. Switch to the directory where you wish to install the module.
     * cd /var/aegir/hostmaster-7.x-3.8/sites/aegir.example.com/modules/contrib
 3. Download this module.  This command will include the required PHP library.
-    * git clone --recursive https://gitlab.com/aegir/hosting_https.git
+    * git clone --recursive --branch [TAG](https://gitlab.com/aegir/hosting_https/tags) https://gitlab.com/aegir/hosting_https.git
 4. Surf to Administration » Hosting » Experimental » Aegir HTTPS.
 5. Enable at least one certificate service (e.g. Let's Encrypt or Self-signed).
 6. Enable at least one Web serrver service (e.g. Apache HTTPS or Nginx HTTPS).

@@ -110,7 +110,7 @@ class Provision_Service_Certificate_LetsEncrypt extends Provision_Service_Certif
     $config_path = d()->server->letsencrypt_config_path;
     $domain_list = $this->getDomainsString(d());
     drush_log(dt("Generating Let's Encrypt certificates."));
-    $result = drush_shell_exec("{$script_path}/script -c -f {$script_path}/{$config_file} --out {$config_path} {$domain_list}");
+    $result = drush_shell_exec("{$script_path}/script --cron --config {$script_path}/{$config_file} --out {$config_path} {$domain_list}");
     foreach (drush_shell_exec_output() as $line) {
       drush_log($line);
     }
@@ -141,17 +141,17 @@ class Provision_Service_Certificate_LetsEncrypt extends Provision_Service_Certif
   /**
    * Returns a string specifying the site names we'd like on the certificate.
    *
-   * An example would be "-d example.com -d www.example.com" where the former is
+   * An example would be "--domain example.com --domain www.example.com" where the former is
    * the canonical name, and the latter is one possible alternate name.
    */
   protected function getDomainsString($context) {
     $canonical_name = $context->uri;
-    $options_list = array("-d {$canonical_name}");
+    $options_list = array("--domain {$canonical_name}");
 
     if (isset($context->aliases)) {
       foreach ($context->aliases as $alias) {
-        if (!in_array("-d {$alias}", $options_list)) {
-          $options_list[] = "-d {$alias}";
+        if (!in_array("--domain {$alias}", $options_list)) {
+          $options_list[] = "--domain {$alias}";
         }
       }
     }

@@ -110,7 +110,9 @@ class Provision_Service_Certificate_LetsEncrypt extends Provision_Service_Certif
     $config_path = d()->server->letsencrypt_config_path;
     $domain_list = $this->getDomainsString(d());
     drush_log(dt("Generating Let's Encrypt certificates."));
-    $result = drush_shell_exec("{$script_path}/script --cron --config {$script_path}/{$config_file} --out {$config_path} {$domain_list}");
+    $cmd = "{$script_path}/script --cron --config {$script_path}/{$config_file} --out {$config_path} {$domain_list}";
+    drush_log("Running: " . $cmd, 'notice');
+    $result = drush_shell_exec($cmd);
     foreach (drush_shell_exec_output() as $line) {
       drush_log($line);
     }

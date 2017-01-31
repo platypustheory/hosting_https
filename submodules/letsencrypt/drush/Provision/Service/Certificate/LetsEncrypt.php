@@ -109,8 +109,15 @@ class Provision_Service_Certificate_LetsEncrypt extends Provision_Service_Certif
     $script_path = d()->server->letsencrypt_script_path;
     $config_path = d()->server->letsencrypt_config_path;
     $domain_list = $this->getDomainsString(d());
+    $on_remote_server = !provision_is_local_host(d()->platform->web_server->remote_host);
+    $le_hook = $script_path . '/dehydrated-hooks.sh';
+    $le_options = '--cron';
+    if ($on_remote_server) {
+      $le_options .= ' --hook ' . $le_hook;
+    }
+
     drush_log(dt("Generating Let's Encrypt certificates."));
-    $cmd = "{$script_path}/script --cron --config {$script_path}/{$config_file} --out {$config_path} {$domain_list}";
+    $cmd = "{$script_path}/script $le_options --config {$script_path}/{$config_file} --out {$config_path} {$domain_list}";
     drush_log("Running: " . $cmd, 'notice');
     $result = drush_shell_exec($cmd);
     foreach (drush_shell_exec_output() as $line) {

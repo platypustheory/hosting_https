@@ -15,7 +15,7 @@ It provides a cleaner, more sustainable and more extensible implementation that 
     * Edit the server nodes(e.g. /hosting/c/server_master) to not use an SSL service.
     * Disable any of the SSL modules (including hosting_le) you may have already enabled.
 2. Switch to the directory where you wish to install the module.
-    * cd /var/aegir/hostmaster-7.x-3.8/sites/aegir.example.com/modules/contrib
+    * cd /var/aegir/hostmaster-7.x-3.x/sites/aegir.example.com/modules/contrib
 3. Download this module.  This command will include the required PHP library.
     * git clone --recursive --branch [TAG](https://gitlab.com/aegir/hosting_https/tags) https://gitlab.com/aegir/hosting_https.git
 4. Surf to Administration » Hosting » Experimental » Aegir HTTPS.

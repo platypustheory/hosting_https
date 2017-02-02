@@ -48,3 +48,13 @@ For the Let's Encrypt certificate service, this should get done automatically vi
 ## Known Issues
 
 See [the issue queue](https://gitlab.com/aegir/hosting_https/issues).
+
+## Troubleshooting
+
+If you notice that the certificate generation fails you can check the Aegir 'Verify' task logs for details.
+
+### Test the challenge directory
+
+Create a file e.g. called `index.html` in `/var/aegir/config/letsencrypt.d/well-known/acme-challenge/` and test if you can access it over http via http://www.example.com/.well-known/acme-challenge/index.html
+
+If your request is redirected to a *https* url then that could pose a problem when the certificate there is either invalid or expired. Try to remove the redirects.

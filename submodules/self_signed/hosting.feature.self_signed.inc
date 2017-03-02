@@ -18,9 +18,6 @@ function hosting_self_signed_hosting_feature() {
     'description' => $modules['hosting_self_signed']->info['description'],
     'status' => HOSTING_FEATURE_DISABLED,
     'module' => 'hosting_self_signed',
-    // Callback functions to execute on enabling or disabling this feature
-    'enable' => 'hosting_self_signed_feature_enable_callback',
-    'disable' => 'hosting_self_signed_feature_disable_callback',
     'group' => 'experimental'
     );
   return $features;

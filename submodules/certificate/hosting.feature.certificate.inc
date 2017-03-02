@@ -17,9 +17,6 @@ function hosting_certificate_hosting_feature() {
     'description' => t('Certificate service to generate HTTPS certificates for Aegir-hosted sites.'),
     'status' => HOSTING_FEATURE_DISABLED,
     'module' => 'hosting_certificate',
-    // Callback functions to execute on enabling or disabling this feature
-    'enable' => 'hosting_certificate_feature_enable_callback',
-    'disable' => 'hosting_certificate_feature_disable_callback',
     'group' => 'experimental'
     );
   return $features;

@@ -73,6 +73,37 @@ function letsencrypt_provision_apache_vhost_config($uri, $data) {
   }
 }
 
+
+/**
+ * Implementation of hook_drush_command().
+ */
+function letsencrypt_drush_command() {
+  $items['letsencrypt-force-key-regenerate'] = array(
+    'description' => 'Force a new key to be generated".',
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+    'aliases' => array('lfkr'),
+  );
+  return $items;
+}
+
+/**
+ * Implements the letsencrypt-force-key-regenerate command.
+ */
+function drush_letsencrypt_force_key_regenerate() {
+  $https_key = d()->https_key;
+  $certs = d()->platform->web_server->service('Certificate')->get_certificate_paths($https_key);
+  drush_log(print_r($certs, 1), 'warning');
+
+  // Remove only the symlink to the certificate.
+  unlink($certs['https_cert_source']);
+
+  // Re-verify the site, this re-generates the certificate.
+  $options = array();
+  $target = d()->uri;
+  provision_backend_invoke($target, 'provision-verify', array(), $options);
+}
+
+
 /**
  * Implements hook_provision_nginx_vhost_config().
  *

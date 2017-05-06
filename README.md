@@ -7,6 +7,8 @@ It provides a cleaner, more sustainable and more extensible implementation that 
 ## Requirements
 
 1. Aegir 3.9+ or the patch from [Remove 'node_access' check from default hosting_get_servers() calls](https://www.drupal.org/node/2824329#comment-11772591).  See [hosting_certificate_prevent_orphaned_services() causing recursive/loop cache rebuild](https://gitlab.com/aegir/hosting_https/issues/7) for details.
+2. If you're running the Nginx Web server and would like to use Let's Encrypt certificates, be sure to prevent Nginx's default configuration from running.  Otherwise, it will prevent this server configuration from allowing access to the challenge directory.
+    * `sudo rm /etc/nginx/sites-enabled/default`
 
 ## Installation
 

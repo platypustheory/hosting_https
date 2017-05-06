@@ -2,7 +2,7 @@
 
 /**
  * @file
- *   A LetsEncrypt implementation of the Certificate service for the Provision API.
+ * A Let's Encrypt implementation of the Certificate service for Provision.
  */
 
 /**
@@ -73,9 +73,8 @@ function letsencrypt_provision_apache_vhost_config($uri, $data) {
   }
 }
 
-
 /**
- * Implementation of hook_drush_command().
+ * Implements hook_drush_command().
  */
 function letsencrypt_drush_command() {
   $items['letsencrypt-force-key-regenerate'] = array(
@@ -102,32 +101,3 @@ function drush_letsencrypt_force_key_regenerate() {
   $target = d()->uri;
   provision_backend_invoke($target, 'provision-verify', array(), $options);
 }
-
-
-/**
- * Implements hook_provision_nginx_vhost_config().
- *
- * @see https://github.com/lukas2511/dehydrated/blob/master/docs/wellknown.md
- */
-function letsencrypt_provision_nginx_vhost_config($uri, $data) {
-  if (d()->type != 'site') {
-    return '';
-  }
-
-  $server = d()->platform->web_server;
-  if (($server->Certificate_service_type == 'LetsEncrypt') && ($challenge_path = $server->letsencrypt_challenge_path)) {
-    drush_log(dt("Injecting Let's Encrypt 'well-known' ACME challenge directory ':path' into Nginx vhost entry.", array(
-      ':path' => $challenge_path,
-    )));
-
-    $lines = array();
-    $lines[] = "  # Allow access to letsencrypt.org ACME challenges directory.";
-    $lines[] = "  location ^~ /.well-known/acme-challenge {";
-    $lines[] = "    alias {$challenge_path};";
-    $lines[] = "    try_files \$uri 404;";
-    $lines[] = "  }";
-    $lines[] = "\n";
-    return implode("\n", $lines);
-  }
-}
-

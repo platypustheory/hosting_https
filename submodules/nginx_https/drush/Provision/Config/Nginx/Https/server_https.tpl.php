@@ -1,11 +1,16 @@
 <?php
 
+// Inject the HTTP configuration.
+include provision_class_directory('Provision_Config_Nginx_Server') . '/server.tpl.php';
+
 $server = d();
 if (($server->Certificate_service_type == 'LetsEncrypt') && ($challenge_path = $server->letsencrypt_challenge_path)) {
   drush_log(dt("Injecting Let's Encrypt 'well-known' ACME challenge directory ':path' into Nginx vhost entry.", array(
     ':path' => $challenge_path,
   )));
 ?>
+
+
 #######################################################
 ###  nginx default server overrides for HTTPS set-up
 #######################################################
@@ -13,9 +18,9 @@ if (($server->Certificate_service_type == 'LetsEncrypt') && ($challenge_path = $
 # Allow access to the letsencrypt.org ACME challenges directory.
 # See https://github.com/lukas2511/dehydrated/blob/master/docs/wellknown.md.
 # This will override the default "nginx default server" stanza for HTTP (port
-# 80) included later, which will be ignored because of this one here.
+# 80), which will be ignored because this one is set as the default.
 server {
-  listen       <?php print '*:' . $http_port; ?>;
+  listen       <?php print '*:' . $http_port; ?> default_server;
   server_name  _;
   location / {
     return 404;
@@ -25,11 +30,8 @@ server {
     try_files $uri 404;
   }
 }
-
 <?php
 }
-
-include provision_class_directory('Provision_Config_Nginx_Server') . '/server.tpl.php';
 ?>
 
 

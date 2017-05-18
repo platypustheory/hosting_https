@@ -18,13 +18,10 @@ It provides a cleaner, more sustainable and more extensible implementation that 
     * Disable any of the SSL modules (including hosting_le) you may have already enabled.
 2. Switch to the directory where you wish to install the module.
     * cd /var/aegir/hostmaster-7.x-3.x/sites/aegir.example.com/modules/contrib
-3. Download this module and the [Dehydrated](https://github.com/lukas2511/dehydrated) library:  
-    * Option 1: Clone with git. Latest version is *7.x-3.x-alpha3*. Browse all releases at https://gitlab.com/aegir/hosting_https/tags.  
-    
-      ```
-      git clone --recursive --branch 7.x-3.x-alpha3 https://gitlab.com/aegir/hosting_https.git
-      ```
-    * Option 2: Install with drush make. (See Below)
+3. Download this module and the [Dehydrated](https://github.com/lukas2511/dehydrated) library:
+    * Option 1: Clone with Git. This command will download the latest release (at the time of this writing). Browse [all releases](https://gitlab.com/aegir/hosting_https/tags).
+        * `git clone --recursive --branch 7.x-3.x-alpha4 https://gitlab.com/aegir/hosting_https.git`
+    * Option 2: Install with Drush make. (See Below)
 4. Surf to Administration » Hosting » Experimental » Aegir HTTPS.
 5. Enable at least one certificate service (e.g. Let's Encrypt or Self-signed).
 6. Enable at least one Web serrver service (e.g. Apache HTTPS or Nginx HTTPS).

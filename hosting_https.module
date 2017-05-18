@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Hook implementations for the Hosting HTTPS module.
@@ -23,7 +24,8 @@ include_once 'hosting_https.nodeapi.inc';
 
 /**
  * Implements hook_permission().
- * TODO: move this to the 'manual' certificate service implementation.
+ *
+ * @todo Move this to the 'manual' certificate service implementation.
  */
 function hosting_https_permission() {
   return array(
@@ -36,8 +38,8 @@ function hosting_https_permission() {
 /**
  * Return a list of servers which have HTTPS enabled web services.
  */
-function hosting_https_get_servers() {
-  $servers = hosting_get_servers('http');
+function hosting_https_get_servers($access_check = TRUE) {
+  $servers = hosting_get_servers('http', $access_check);
   $https_servers = array();
   foreach ($servers as $nid => $title) {
     $node = node_load($nid);
@@ -98,4 +100,22 @@ function hosting_https_form_alter(&$form, &$form_state, $form_id) {
 function hosting_https_feature_enable_callback() {
   drupal_set_message(t("Please make sure you have enabled HTTPS support in your webserver, e.g. by enabling mod_ssl in Apache."));
   drupal_set_message(t("To start using HTTPS please edit the desired server node within Aegir to set it from e.g. 'apache' to 'apache_https'."));
+}
+
+function hosting_https_is_available($site, $check_server_access = TRUE) {
+  $https_available = FALSE;
+
+  if (isset($site->nid)) {
+    $platform = node_load($site->platform);
+    $server = node_load($platform->web_server);
+
+    if ($server->services['http']->https_enabled) {
+      $https_available = TRUE;
+    }
+  }
+  elseif (count(hosting_https_get_servers($check_server_access)) > 0) {
+    $https_available = TRUE;
+  }
+
+  return $https_available;
 }

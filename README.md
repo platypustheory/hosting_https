@@ -18,12 +18,44 @@ It provides a cleaner, more sustainable and more extensible implementation that 
     * Disable any of the SSL modules (including hosting_le) you may have already enabled.
 2. Switch to the directory where you wish to install the module.
     * cd /var/aegir/hostmaster-7.x-3.x/sites/aegir.example.com/modules/contrib
-3. Download this module.  This command will include the required PHP library.
-    * git clone --recursive --branch [TAG](https://gitlab.com/aegir/hosting_https/tags) https://gitlab.com/aegir/hosting_https.git
+3. Download this module and the [Dehydrated](https://github.com/lukas2511/dehydrated) library:  
+    * Option 1: Clone with git. Latest version is *7.x-3.x-alpha3*. Browse all releases at https://gitlab.com/aegir/hosting_https/tags.  
+    
+      ```
+      git clone --recursive --branch 7.x-3.x-alpha3 https://gitlab.com/aegir/hosting_https.git
+      ```
+    * Option 2: Install with drush make. (See Below)
 4. Surf to Administration » Hosting » Experimental » Aegir HTTPS.
 5. Enable at least one certificate service (e.g. Let's Encrypt or Self-signed).
 6. Enable at least one Web serrver service (e.g. Apache HTTPS or Nginx HTTPS).
 7. Save the configuration.
+
+## Adding Aegir HTTPS with Drush Make
+
+You can use the following makefile to add Hosting HTTPS and the Dehydrated library to your hostmaster site:
+
+```
+; hosting_https.make
+; Download hosting_https via git until we have a release on Drupal.org.
+projects[hosting_https][type] = module
+projects[hosting_https][download][type] = git
+projects[hosting_https][download][url] = https://gitlab.com/aegir/hosting_https.git
+projects[hosting_https][download][branch] = master
+projects[hosting_https][subdir] = "aegir"
+
+; Dehydrated for LetsEncrypt.org
+libraries[dehydrated][download][type] = git
+libraries[dehydrated][download][url] = https://github.com/lukas2511/dehydrated
+libraries[dehydrated][destination] = modules/aegir/hosting_https/submodules/letsencrypt/drush/bin
+```
+
+To install into an existing site: create a hosting_https.make file, put it in the root of your hostmaster, ie /var/aegir/hostmaster-7.x-3.x, and run the following command:
+
+```
+drush make --no-core hosting_https.make --contrib-destination sites/myaegir.com
+```
+
+Make sure to set `--contrib-destination`, to put the modules in `sites/myaegir.com`, so you can be sure they are kept when you upgrade Hostmaster.
 
 ## Server Set-Up
 

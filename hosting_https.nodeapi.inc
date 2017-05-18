@@ -10,21 +10,7 @@
 function hosting_https_site_form(&$form, &$form_state, $form_id) {
   $node = $form['#node'];
 
-  $https_available = FALSE;
-  // Only allow the user to modify these values when the platform is HTTPS enabled.
-  if (isset($node->nid)) {
-    $platform = node_load($node->platform);
-    $server = node_load($platform->web_server);
-
-    if ($server->services['http']->https_enabled) {
-      $https_available = TRUE;
-    }
-  }
-  elseif (count(hosting_https_get_servers('http')) > 0) {
-    $https_available = TRUE;
-  }
-
-  if (!$https_available) {
+  if (!($https_available = hosting_https_is_available($node))) {
     return;
   }
 
@@ -54,7 +40,7 @@ function hosting_https_site_form(&$form, &$form_state, $form_id) {
 function hosting_https_hosting_site_options_alter(&$return, $node) {
   // Test if HTTPS has been enabled.
   if (isset($node->https_enabled) && $node->https_enabled) {
-    // we need to ensure that the return value is properly indexed, otherwise it
+    // We need to ensure that the return value is properly indexed, otherwise it
     // gets interpreted as an object by jquery.
     $return['profile'] = array_values(array_intersect($return['profile'], hosting_https_get_profiles()));
 
@@ -132,7 +118,7 @@ function hosting_https_filter_key($key) {
 /**
  * Site form validation callback.
  *
- * @see hosting_https_site_form().
+ * @see hosting_https_site_form()
  */
 function hosting_https_site_form_validate($form, $form_state) {
   if ($form_state['values']['https_enabled']) {
@@ -172,7 +158,7 @@ function hosting_https_nodeapi_site_presave(&$node) {
  * Implements hook_nodeapi_TYPE_OP().
  */
 function hosting_https_nodeapi_site_insert($node) {
-  $id = db_insert('hosting_https_site')
+  db_insert('hosting_https_site')
     ->fields(array(
       'vid' => $node->vid,
       'nid' => $node->nid,
@@ -232,4 +218,3 @@ function hosting_https_nodeapi_site_delete_revision($node) {
     ->condition('vid', $node->vid)
     ->execute();
 }
-

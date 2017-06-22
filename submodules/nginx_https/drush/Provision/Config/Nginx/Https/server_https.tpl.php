@@ -1,12 +1,19 @@
 <?php
 
+/**
+ * @file
+ * Template file for the Nginx server configuration.
+ */
+
 // Inject the HTTP configuration.
 include provision_class_directory('Provision_Config_Nginx_Server') . '/server.tpl.php';
 
+const CHALLENGE_PATH_EXTERNAL = '/.well-known/acme-challenge';
+
 $server = d();
-if (($server->Certificate_service_type == 'LetsEncrypt') && ($challenge_path = $server->letsencrypt_challenge_path)) {
+if (($server->Certificate_service_type == 'LetsEncrypt') && ($challenge_path_internal = $server->letsencrypt_challenge_path)) {
   drush_log(dt("Injecting Let's Encrypt 'well-known' ACME challenge directory ':path' into Nginx vhost entry.", array(
-    ':path' => $challenge_path,
+    ':path' => $challenge_path_internal,
   )));
 ?>
 
@@ -25,8 +32,8 @@ server {
   location / {
     return 404;
   }
-  location ^~ /.well-known/acme-challenge {
-    alias <?php print $challenge_path ?>;
+  location ^~ <?php print CHALLENGE_PATH_EXTERNAL ?> {
+    alias <?php print $challenge_path_internal ?>;
     try_files $uri 404;
   }
 }

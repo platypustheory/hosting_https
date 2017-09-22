@@ -76,6 +76,14 @@ Make sure to set `--contrib-destination`, to put the modules in `sites/myaegir.c
 
 For the Let's Encrypt certificate service, this should get done automatically via the Let's Encrypt queue. It will run a Verify task on each site every week as site verification is where certificates get renewed if needed. The seven-day default was chosen to match the CA's [rate limits](https://letsencrypt.org/docs/rate-limits/).
 
+## Forcing Certificate Regeneration
+
+If you'd like to force a site's certificate regeneration, perhaps because you just changed the Web server configuration from Staging to Production, you can use this Drush command:
+
+`drush @site1.example.com letsencrypt-force-key-regenerate`
+
+If the new certificate isn't immediately available afterwards, you'll also have to Verify the site.  This is generally required for Hostmaster, the Aegir site itself.
+
 ## Known Issues
 
 See [the issue queue](https://gitlab.com/aegir/hosting_https/issues).

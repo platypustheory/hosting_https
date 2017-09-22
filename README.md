@@ -82,6 +82,8 @@ If you'd like to force a site's certificate regeneration, perhaps because you ju
 
 `drush @site1.example.com letsencrypt-force-key-regenerate`
 
+If the new certificate isn't immediately available afterwards, you'll also have to Verify the site.  This is generally required for Hostmaster, the Aegir site itself.
+
 ## Known Issues
 
 See [the issue queue](https://gitlab.com/aegir/hosting_https/issues).

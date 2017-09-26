@@ -25,5 +25,8 @@ function deploy_challenge {
     drush php-eval "d('@$DOMAIN')->service('http')->sync(d('@server_master')->aegir_root . '/config/letsencrypt.d/well-known/acme-challenge');"
 }
 
+HANDLER="$1"; shift
+if [[ "${HANDLER}" =~ ^(deploy_challenge)$ ]]; then
+  "$HANDLER" "$@"
+fi
 
-HANDLER=$1; shift; $HANDLER $@

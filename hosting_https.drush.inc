@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Drush hooks for the Hosting HTTPS module.
@@ -11,7 +12,7 @@ function hosting_https_hosting_site_context_options(&$task) {
   $node = $task->ref;
 
   if (isset($node->https_enabled)) {
-    // we pass null to disable the option.
+    // We pass null to disable the option.
     $task->context_options['https_enabled'] = ($node->https_enabled) ? $node->https_enabled : 'null';
 
     if ($node->https_enabled) {
@@ -20,5 +21,9 @@ function hosting_https_hosting_site_context_options(&$task) {
     else {
       $task->context_options['https_key'] = 'null';
     }
+  }
+
+  if (isset($node->https_client_authentication_enabled)) {
+    $task->context_options['https_client_authentication_enabled'] = ($node->https_client_authentication_enabled) ? HOSTING_HTTPS_CLIENT_AUTHENTICATION_ENABLED : 'null';
   }
 }

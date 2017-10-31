@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * NodeAPI functions for the Hosting HTTPS module.
@@ -30,6 +31,14 @@ function hosting_https_site_form(&$form, &$form_state, $form_id) {
     '#access' => user_access('manage site HTTPS settings'),
   ), 'hosting_https_status_options', $https_available);
 
+  _hosting_site_field($form['hosting_https_wrapper'], $node, 'https_client_authentication_enabled', array(
+    '#type' => 'checkbox',
+    '#title' => t('Enable client authentication'),
+    '#description' => t('Check this box to allow for server authentication of clients in addition to clients authenticating the server.  It should only be enabled if required by the hosted site (e.g. if using the <a href="https://www.drupal.org/project/certificatelogin">Certificate Login</a> module), or users will needlessly be asked to present identity certificates if they have them.  This will only work if HTTPS is enabled or required, and your Web server module for Aegir HTTPS supports it.'),
+    '#default_value' => (isset($node->https_client_authentication_enabled)) ? $node->https_client_authentication_enabled : HOSTING_HTTPS_CLIENT_AUTHENTICATION_DISABLED,
+    '#access' => user_access('manage site HTTPS settings'),
+  ), 'filter_xss', $https_available);
+
   // Add our custom validate callback.
   $form['#validate'][] = 'hosting_https_site_form_validate';
 }
@@ -59,14 +68,32 @@ function hosting_https_nodeapi_site_view(&$node, $teaser = FALSE) {
     '#weight' => 6,
   );
 
+  $node->content['info']['https_client_authentication_enabled'] = array(
+    '#type' => 'item',
+    '#title' => t('Client authentication'),
+    '#markup' => hosting_https_client_authentication_enabled($node) ? 'Enabled' : 'Disabled',
+    '#weight' => 7,
+  );
+
   if (isset($node->https_enabled) && $node->https_enabled == TRUE) {
     $node->content['info']['https_key'] = array(
       '#type' => 'item',
       '#title' => t('Encryption key'),
       '#markup' => hosting_https_output_key($node),
-      '#weight' => 7,
+      '#weight' => 8,
     );
   }
+}
+
+/**
+ * Determines if client authentication is enabled.
+ */
+function hosting_https_client_authentication_enabled($node) {
+  if (isset($node->https_enabled) && $node->https_enabled &&
+      isset($node->https_client_authentication_enabled) && $node->https_client_authentication_enabled) {
+    return TRUE;
+  }
+  return FALSE;
 }
 
 /**
@@ -136,9 +163,8 @@ function hosting_https_site_form_validate($form, $form_state) {
         else {
           $enable = t('Ask your site administrator to enable HTTPS.');
         }
-        return form_set_error('hosting_https_wrapper',
-          t("This site's platform is installed on a server that does not have HTTPS enabled. !enable", array(
-            '!enable' => $enable,
+        return form_set_error('hosting_https_wrapper', t("This site's platform is installed on a server that does not have HTTPS enabled. !enable", array(
+          '!enable' => $enable,
         )));
       }
     }
@@ -152,6 +178,9 @@ function hosting_https_nodeapi_site_presave(&$node) {
   if (!isset($node->https_enabled)) {
     $node->https_enabled = HOSTING_HTTPS_DISABLED;
   }
+  if (!isset($node->https_client_authentication_enabled)) {
+    $node->https_client_authentication_enabled = HOSTING_HTTPS_CLIENT_AUTHENTICATION_DISABLED;
+  }
 }
 
 /**
@@ -163,6 +192,7 @@ function hosting_https_nodeapi_site_insert($node) {
       'vid' => $node->vid,
       'nid' => $node->nid,
       'https_enabled' => $node->https_enabled,
+      'client_authentication' => $node->https_client_authentication_enabled,
     ))
     ->execute();
 }
@@ -180,6 +210,7 @@ function hosting_https_nodeapi_site_update($node) {
     db_update('hosting_https_site')
       ->fields(array(
         'https_enabled' => $node->https_enabled,
+        'client_authentication' => $node->https_client_authentication_enabled,
       ))
       ->condition('vid', $node->vid)
       ->execute();
@@ -190,12 +221,19 @@ function hosting_https_nodeapi_site_update($node) {
  * Implements hook_node_load().
  */
 function hosting_https_node_load($nodes, $types) {
+  // Necessary if run through Drush not fully bootstrapped.
+  require_once DRUPAL_ROOT . '/includes/install.inc';
+
+  // Handle the case where hostmaster loads itself before DB schema updates run.
+  $client_auth_column = (drupal_get_installed_schema_version('hosting_https') >= 7001) ? ', client_authentication' : '';
+
   foreach ($nodes as $nid => $node) {
-    $result = db_query("SELECT https_enabled FROM {hosting_https_site} WHERE vid = :vid",
+    $result = db_query("SELECT https_enabled$client_auth_column FROM {hosting_https_site} WHERE vid = :vid",
       array(':vid' => $node->vid)
       )->fetchObject();
     if ($result) {
       $nodes[$nid]->https_enabled = $result->https_enabled;
+      $nodes[$nid]->https_client_authentication_enabled = $client_auth_column ? $result->client_authentication : HOSTING_HTTPS_CLIENT_AUTHENTICATION_DISABLED;
       $nodes[$nid]->https_key = hosting_https_get_key($node);
     }
   }

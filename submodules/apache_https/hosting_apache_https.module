@@ -1,6 +1,8 @@
 <?php
+
 /**
- * @file Register a Hosting service for Apache w/ HTTPS
+ * @file
+ * Register a Hosting service for Apache w/ HTTPS.
  */
 
 /**
@@ -11,13 +13,3 @@ function hosting_apache_https_hosting_service() {
     'https_apache' => 'http',
   );
 }
-
-/**
- * Implements hook_system_info_alter().
- */
-function hosting_apache_https_system_info_alter(&$info, $file, $type) {
-  if ($type == 'module' && $file->name == 'hosting_apache_https') {
-    hosting_certificate_prevent_orphaned_services($info, 'http', 'https_apache');
-  }
-}
-

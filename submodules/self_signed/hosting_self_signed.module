@@ -11,13 +11,3 @@
 function hosting_self_signed_hosting_service() {
   return array('SelfSigned' => 'Certificate');
 }
-
-/**
- * Implements hook_system_info_alter().
- */
-function hosting_self_signed_system_info_alter(&$info, $file, $type) {
-  if ($type == 'module' && $file->name == 'hosting_self_signed') {
-    hosting_certificate_prevent_orphaned_services($info, 'Certificate', 'SelfSigned');
-  }
-}
-

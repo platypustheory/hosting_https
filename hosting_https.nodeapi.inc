@@ -34,7 +34,7 @@ function hosting_https_site_form(&$form, &$form_state, $form_id) {
   _hosting_site_field($form['hosting_https_wrapper'], $node, 'https_client_authentication_enabled', array(
     '#type' => 'checkbox',
     '#title' => t('Enable client authentication'),
-    '#description' => t('Check this box to allow for server authentication of clients in addition to clients authenticating the server.  It should only be enabled if required by the hosted site (e.g. if using the <a href="https://www.drupal.org/project/certificatelogin">Certificate Login</a> module), or users will needlessly be asked to present identity certificates if they have them.  This will only work if HTTPS is enabled or required, and your Web server module for Aegir HTTPS supports it.'),
+    '#description' => t('Check this box to allow for server authentication of clients in addition to clients authenticating the server.  It should only be enabled if required by the hosted site (e.g. if using the <a href="https://www.drupal.org/project/certificatelogin">Certificate Login</a> module), or users will needlessly be asked to present identity certificates if they have them.  This will only work if HTTPS is enabled or required, and your Web server module for Aegir HTTPS supports it (currently only Nginx).'),
     '#default_value' => (isset($node->https_client_authentication_enabled)) ? $node->https_client_authentication_enabled : HOSTING_HTTPS_CLIENT_AUTHENTICATION_DISABLED,
     '#access' => user_access('manage site HTTPS settings'),
   ), 'filter_xss', $https_available);

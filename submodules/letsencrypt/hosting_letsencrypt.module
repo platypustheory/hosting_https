@@ -13,15 +13,6 @@ function hosting_letsencrypt_hosting_service() {
 }
 
 /**
- * Implements hook_system_info_alter().
- */
-function hosting_letsencrypt_system_info_alter(&$info, $file, $type) {
-  if ($type == 'module' && $file->name == 'hosting_letsencrypt') {
-    hosting_certificate_prevent_orphaned_services($info, 'Certificate', 'LetsEncrypt');
-  }
-}
-
-/**
  * Implements hook_hosting_queues().
  *
  * Return a list of queues that this module needs to manage.
@@ -44,7 +35,6 @@ function hosting_letsencrypt_hosting_queues() {
 
   return $queues;
 }
-
 
 /**
  * Implements hosting_QUEUE_TYPE_queue().

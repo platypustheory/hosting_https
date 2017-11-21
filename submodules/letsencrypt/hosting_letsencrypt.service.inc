@@ -12,7 +12,7 @@ class hostingService_Certificate_LetsEncrypt extends hostingService_Certificate 
 
   public $type = 'LetsEncrypt';
 
-  protected $letsencrypt_ca = 'staging';
+  protected $letsencrypt_ca = 'production';
   protected $letsencrypt_ca_options = array(
     'staging' => 'Staging',
     'production' => 'Production',

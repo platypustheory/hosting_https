@@ -23,3 +23,29 @@ function https_apache_provision_register_autoload() {
   }
 }
 
+/**
+ * Implements hook_provision_apache_vhost_config().
+ *
+ * Adds HTTPS client authentication to sites that require it.
+ */
+function https_apache_provision_apache_vhost_config($uri, $data) {
+  $http_service = $data['server']->service('http');
+
+  if ((d()->type != 'site') ||
+      !isset($http_service->https_enabled) || !$http_service->https_enabled ||
+      !isset(d()->https_enabled) || !d()->https_enabled ||
+      !isset(d()->https_client_authentication_enabled) || !d()->https_client_authentication_enabled) {
+    return '';
+  }
+
+  $lines = array();
+  $lines[] = "  ###################################";
+  $lines[] = "  ### Aegir HTTPS (hosting_https) ###";
+  $lines[] = "  ###################################";
+  $lines[] = "  # Enable HTTPS client authentication as per site settings.";
+  $lines[] = "  SSLVerifyCLient optional_no_ca";
+  $lines[] = "  SSLVerifyDepth 1";
+  $lines[] = "  SSLOptions +StdEnvVars +ExportCertData";
+  $lines[] = "\n";
+  return implode("\n", $lines);
+}

@@ -39,9 +39,9 @@ class Provision_Service_http_https extends Provision_Service_http_public {
     parent::init_site();
 
     $this->context->setProperty('https_enabled', 0);
+    $this->context->setProperty('https_client_authentication_enabled', 0);
     $this->context->setProperty('https_key', NULL);
   }
-
 
   function config_data($config = NULL, $class = NULL) {
     $data = parent::config_data($config, $class);

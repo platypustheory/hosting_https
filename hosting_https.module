@@ -6,19 +6,17 @@
  */
 
 /**
- * HTTPS is disabled for this site.
+ * HTTPS is either disabled, enabled or required for a site.
  */
 define('HOSTING_HTTPS_DISABLED', 0);
-
-/**
- * HTTPS is enabled for this site.
- */
 define('HOSTING_HTTPS_ENABLED', 1);
+define('HOSTING_HTTPS_REQUIRED', 2);
 
 /**
- * HTTPS is required for this site.
+ * Client authentication can also be enabled.
  */
-define('HOSTING_HTTPS_REQUIRED', 2);
+define('HOSTING_HTTPS_CLIENT_AUTHENTICATION_DISABLED', 0);
+define('HOSTING_HTTPS_CLIENT_AUTHENTICATION_ENABLED', 1);
 
 include_once 'hosting_https.nodeapi.inc';
 

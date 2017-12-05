@@ -53,6 +53,14 @@ function hosting_https_schema() {
         'not null' => TRUE,
         'default' => 0,
       ),
+      'client_authentication' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'size' => 'tiny',
+        'description' => 'Whether client authentication is enabled (1) or not (0).',
+      ),
     ),
     'primary key' => array('vid', 'nid'),
   );
@@ -71,5 +79,17 @@ function hosting_https_uninstall() {
   db_delete('hosting_service')
     ->condition('service', 'http')
     ->condition('type', 'https_nginx')
+    ->execute();
+}
+
+/**
+ * Add the client_authentication column with defaults to the database.
+ */
+function hosting_https_update_7001() {
+  $field = hosting_https_schema()['hosting_https_site']['fields']['client_authentication'];
+  db_add_field('hosting_https_site', 'client_authentication', $field);
+
+  db_update('hosting_https_site')
+    ->fields(array('client_authentication' => 0))
     ->execute();
 }

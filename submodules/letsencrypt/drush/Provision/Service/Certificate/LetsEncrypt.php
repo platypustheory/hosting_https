@@ -176,15 +176,28 @@ class Provision_Service_Certificate_LetsEncrypt extends Provision_Service_Certif
   function verify() {
     parent::verify();
     if ($this->context->type == 'server') {
+      $source = dirname(dirname(dirname(dirname(__FILE__)))) . '/bin';
       // Create the configuration file directory.
       provision_file()->create_dir($this->server->letsencrypt_config_path, dt("Let's Encrypt configuration directory"), 0711);
       // Create the ACME challenge directory.
       provision_file()->create_dir($this->server->letsencrypt_challenge_path, dt("Let's Encrypt ACME challenge directory"), 0711);
-      // Copy the script directory into place.
-      $source = dirname(dirname(dirname(dirname(__FILE__)))) . '/bin/';
-      if (drush_copy_dir($source, $this->server->letsencrypt_script_path, FILE_EXISTS_OVERWRITE)) {
-        drush_log("Copied Let's Encrypt script directory into place.", 'success');
+
+      // Create the script directory.
+      provision_file()->create_dir($this->server->letsencrypt_script_path, dt("Let's Encrypt script + data directory"), 0711);
+
+      // Initialize config.
+      provision_file()->copy($source . '/config', $this->server->letsencrypt_script_path . '/config');
+      provision_file()->copy($source . '/config.staging', $this->server->letsencrypt_script_path . '/config.staging');
+
+      // Initialize hooks file.
+      provision_file()->copy($source . '/dehydrated-hooks.sh', $this->server->letsencrypt_script_path . '/dehydrated-hooks.sh');
+
+      if (drush_copy_dir($source . '/dehydrated', $this->server->letsencrypt_script_path . '/dehydrated', FILE_EXISTS_OVERWRITE)) {
+        drush_log("Copied Let's Encrypt dehydrated script code into place.", 'success');
       }
+      // Symlink the dehydrated code into place.
+      provision_file()->symlink($this->server->letsencrypt_script_path . '/dehydrated/dehydrated', $this->server->letsencrypt_script_path . '/script', dt("Create Let's Encrypt dehydrated symlink."), 0644);
+
       // Sync the directory to the remote server if needed.
     #  $this->sync($this->server->letsencrypt_config_path);
     }

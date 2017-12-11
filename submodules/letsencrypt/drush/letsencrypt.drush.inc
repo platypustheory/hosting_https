@@ -68,7 +68,7 @@ function letsencrypt_generate_apache_wellknown_lines($challenge_path) {
  *
  * @see https://github.com/lukas2511/dehydrated/blob/master/docs/wellknown.md
  */
-function letsencrypt_provision_apache_server_config($uri, $data) {
+function letsencrypt_provision_apache_server_config($data) {
   if (d()->type != 'server') {
     return '';
   }

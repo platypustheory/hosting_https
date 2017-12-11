@@ -80,6 +80,7 @@ function letsencrypt_provision_apache_server_config($data) {
     return letsencrypt_generate_apache_wellknown_lines($challenge_path);
   }
 }
+
 /**
  * Implements hook_provision_apache_vhost_config().
  *

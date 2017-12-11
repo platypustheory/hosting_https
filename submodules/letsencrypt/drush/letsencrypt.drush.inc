@@ -33,22 +33,13 @@ function letsencrypt_provision_services() {
   letsencrypt_provision_register_autoload();
 }
 
+
 /**
- * Implements hook_provision_apache_vhost_config().
+ * Generate Apache config to allow access to /.well-known/acme-challenge
  *
- * @see https://github.com/lukas2511/dehydrated/blob/master/docs/wellknown.md
+ * @param string $challenge_path The path where verification file will be stored.
  */
-function letsencrypt_provision_apache_vhost_config($uri, $data) {
-  if (d()->type != 'site') {
-    return '';
-  }
-
-  $server = d()->platform->web_server;
-  if (($server->Certificate_service_type == 'LetsEncrypt') && ($challenge_path = $server->letsencrypt_challenge_path)) {
-    drush_log(dt("Injecting Let's Encrypt 'well-known' ACME challenge directory ':path' into Apache vhost entry.", array(
-      ':path' => $challenge_path,
-    )));
-
+function letsencrypt_generate_apache_wellknown_lines($challenge_path) {
     $lines = array();
     $lines[] = "  # Allow access to letsencrypt.org ACME challenges directory.";
     $lines[] = "  Alias /.well-known/acme-challenge {$challenge_path}";
@@ -70,6 +61,25 @@ function letsencrypt_provision_apache_vhost_config($uri, $data) {
     $lines[] = "  </Directory>";
     $lines[] = "\n";
     return implode("\n", $lines);
+}
+
+/**
+ * Implements hook_provision_apache_vhost_config().
+ *
+ * @see https://github.com/lukas2511/dehydrated/blob/master/docs/wellknown.md
+ */
+function letsencrypt_provision_apache_vhost_config($uri, $data) {
+  if (d()->type != 'site') {
+    return '';
+  }
+
+  $server = d()->platform->web_server;
+  if (($server->Certificate_service_type == 'LetsEncrypt') && ($challenge_path = $server->letsencrypt_challenge_path)) {
+    drush_log(dt("Injecting Let's Encrypt 'well-known' ACME challenge directory ':path' into Apache vhost entry.", array(
+      ':path' => $challenge_path,
+    )));
+
+    return letsencrypt_generate_apache_wellknown_lines($challenge_path);
   }
 }
 

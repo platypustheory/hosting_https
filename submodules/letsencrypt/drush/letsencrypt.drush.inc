@@ -64,6 +64,23 @@ function letsencrypt_generate_apache_wellknown_lines($challenge_path) {
 }
 
 /**
+ * Implements hook_provision_apache_server_config().
+ *
+ * @see https://github.com/lukas2511/dehydrated/blob/master/docs/wellknown.md
+ */
+function letsencrypt_provision_apache_server_config($uri, $data) {
+  if (d()->type != 'server') {
+    return '';
+  }
+  $server = d();
+  if (($server->Certificate_service_type == 'LetsEncrypt') && ($challenge_path = $server->letsencrypt_challenge_path)) {
+    drush_log(dt("Injecting Let's Encrypt 'well-known' ACME challenge directory ':path' into Apache default vhost entry.", array(
+      ':path' => $challenge_path,
+    )));
+    return letsencrypt_generate_apache_wellknown_lines($challenge_path);
+  }
+}
+/**
  * Implements hook_provision_apache_vhost_config().
  *
  * @see https://github.com/lukas2511/dehydrated/blob/master/docs/wellknown.md

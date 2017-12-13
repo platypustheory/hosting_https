@@ -1,3 +1,0 @@
-[submodule "submodules/letsencrypt/drush/bin/dehydrated"]
-	path = submodules/letsencrypt/drush/bin/dehydrated
-	url = https://github.com/lukas2511/dehydrated

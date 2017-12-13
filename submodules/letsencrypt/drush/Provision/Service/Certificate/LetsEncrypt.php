@@ -111,7 +111,7 @@ class Provision_Service_Certificate_LetsEncrypt extends Provision_Service_Certif
     $domain_list = $this->getDomainsString(d());
     $on_remote_server = !provision_is_local_host(d()->platform->web_server->remote_host);
     $le_hook = $script_path . '/dehydrated-hooks.sh';
-    $le_options = '--cron';
+    $le_options = '--cron --accept-terms';
     if ($on_remote_server) {
       $le_options .= ' --hook ' . $le_hook;
     }

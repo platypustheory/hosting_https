@@ -120,7 +120,7 @@ class Provision_Service_Certificate_SelfSigned extends Provision_Service_Certifi
         || drush_set_error('HTTPS_KEY_GEN_FAIL', dt('failed to generate HTTPS key in %path', array('%path' => $path . '/openssl.key')));
 
       // Generate the CSR to make the key certifiable by third parties
-      $domain = $https_key == 'default' ? 'default.invalid' : $this->context->uri;
+      $domain = $https_key == 'default' ? 'default.invalid' : d()->uri;
       $ident = "/CN={$domain}/emailAddress=abuse@{$domain}";
       drush_shell_exec("openssl req -new -subj '%s' -key %s/openssl.key -out %s/openssl.csr -batch", $ident, $path, $path)
         || drush_log(dt('failed to generate signing request for certificate in %path', array('%path' => $path . '/openssl.csr')));

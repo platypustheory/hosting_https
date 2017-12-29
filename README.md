@@ -9,7 +9,7 @@ It provides a cleaner, more sustainable and more extensible implementation that 
 1. Aegir 3.9+ or the patch from [Remove 'node_access' check from default hosting_get_servers() calls](https://www.drupal.org/node/2824329#comment-11772591).  See [hosting_certificate_prevent_orphaned_services() causing recursive/loop cache rebuild](https://gitlab.com/aegir/hosting_https/issues/7) for details.
 2. If you're running the Nginx Web server and would like to use Let's Encrypt certificates, be sure to prevent Nginx's default configuration from running.  Otherwise, it will prevent this server configuration from allowing access to the challenge directory.
     * `sudo rm /etc/nginx/sites-enabled/default`
-3. By using this module you accept the terms of service from [LetsEncrypt](https://acme-v01.api.letsencrypt.org/terms)
+3. By using the LetsEncrypt submodule you accept the terms of service from [LetsEncrypt](https://acme-v01.api.letsencrypt.org/terms)
 
 ## Installation
 
@@ -19,9 +19,9 @@ It provides a cleaner, more sustainable and more extensible implementation that 
     * Disable any of the SSL modules (including hosting_le) you may have already enabled.
 2. Switch to the directory where you wish to install the module.
     * cd /var/aegir/hostmaster-7.x-3.x/sites/aegir.example.com/modules/contrib
-3. Download this module and the [Dehydrated](https://github.com/lukas2511/dehydrated) library:
+3. Download this module and the included [Dehydrated](https://github.com/lukas2511/dehydrated) library:
     * Option 1: Clone with Git. This command will download the latest release (at the time of this writing). Browse [all releases](https://gitlab.com/aegir/hosting_https/tags).
-        * `git clone --recursive --branch 7.x-3.x-alpha4 https://gitlab.com/aegir/hosting_https.git`
+        * `git clone --branch 7.x-3.x-beta1 https://gitlab.com/aegir/hosting_https.git`
     * Option 2: Install with Drush make. (See Below)
 4. Surf to Administration » Hosting » Experimental » Aegir HTTPS.
 5. Enable at least one certificate service (e.g. Let's Encrypt or Self-signed).
@@ -40,11 +40,6 @@ projects[hosting_https][download][type] = git
 projects[hosting_https][download][url] = https://gitlab.com/aegir/hosting_https.git
 projects[hosting_https][download][branch] = master
 projects[hosting_https][subdir] = "aegir"
-
-; Dehydrated for LetsEncrypt.org
-libraries[dehydrated][download][type] = git
-libraries[dehydrated][download][url] = https://github.com/lukas2511/dehydrated
-libraries[dehydrated][destination] = modules/aegir/hosting_https/submodules/letsencrypt/drush/bin
 ```
 
 To install into an existing site: create a hosting_https.make file, put it in the root of your hostmaster, ie /var/aegir/hostmaster-7.x-3.x, and run the following command:

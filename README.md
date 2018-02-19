@@ -17,38 +17,10 @@ It provides a cleaner, more sustainable and more extensible implementation that 
     * Check that the hostmaster site is not set to Encryption: Required. (e.g. on /hosting/c/hostmaster) to avoid locking yourself out.
     * Edit the server nodes(e.g. /hosting/c/server_master) to not use an SSL service.
     * Disable any of the SSL modules (including hosting_le) you may have already enabled.
-2. Switch to the directory where you wish to install the module.
-    * cd /var/aegir/hostmaster-7.x-3.x/sites/aegir.example.com/modules/contrib
-3. Download this module and the included [Dehydrated](https://github.com/lukas2511/dehydrated) library:
-    * Option 1: Clone with Git. This command will download the latest release (at the time of this writing). Browse [all releases](https://gitlab.com/aegir/hosting_https/tags).
-        * `git clone --branch 7.x-3.x-beta1 https://gitlab.com/aegir/hosting_https.git`
-    * Option 2: Install with Drush make. (See Below)
-4. Surf to Administration » Hosting » Experimental » Aegir HTTPS.
-5. Enable at least one certificate service (e.g. Let's Encrypt or Self-signed).
-6. Enable at least one Web serrver service (e.g. Apache HTTPS or Nginx HTTPS).
-7. Save the configuration.
-
-## Adding Aegir HTTPS with Drush Make
-
-You can use the following makefile to add Hosting HTTPS and the Dehydrated library to your hostmaster site:
-
-```
-; hosting_https.make
-; Download hosting_https via git until we have a release on Drupal.org.
-projects[hosting_https][type] = module
-projects[hosting_https][download][type] = git
-projects[hosting_https][download][url] = https://gitlab.com/aegir/hosting_https.git
-projects[hosting_https][download][branch] = master
-projects[hosting_https][subdir] = "aegir"
-```
-
-To install into an existing site: create a hosting_https.make file, put it in the root of your hostmaster, ie /var/aegir/hostmaster-7.x-3.x, and run the following command:
-
-```
-drush make --no-core hosting_https.make --contrib-destination sites/myaegir.com
-```
-
-Make sure to set `--contrib-destination`, to put the modules in `sites/myaegir.com`, so you can be sure they are kept when you upgrade Hostmaster.
+2. Surf to Administration » Hosting » Experimental » Aegir HTTPS.
+3. Enable at least one certificate service (e.g. Let's Encrypt or Self-signed).
+4. Enable at least one Web serrver service (e.g. Apache HTTPS or Nginx HTTPS).
+5. Save the configuration.
 
 ## Server Set-Up
 
@@ -82,7 +54,7 @@ If the new certificate isn't immediately available afterwards, you'll also have 
 
 ## Known Issues
 
-See [the issue queue](https://gitlab.com/aegir/hosting_https/issues).
+See [the issue queue](https://www.drupal.org/project/issues/hosting_https).
 
 ## Troubleshooting
 

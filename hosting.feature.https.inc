@@ -13,7 +13,7 @@ function hosting_https_hosting_feature() {
     'description' => t('Provides a service to expose a site encrypted by HTTPS certificates.'),
     'status' => HOSTING_FEATURE_DISABLED,
     'module' => 'hosting_https',
-    'group' => 'experimental',
+    'group' => 'optional',
     'role_permissions' => array(
       'aegir client' => array(
         'manage site HTTPS settings'

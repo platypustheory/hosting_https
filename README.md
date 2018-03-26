@@ -17,7 +17,7 @@ It provides a cleaner, more sustainable and more extensible implementation that 
     * Check that the hostmaster site is not set to Encryption: Required. (e.g. on /hosting/c/hostmaster) to avoid locking yourself out.
     * Edit the server nodes(e.g. /hosting/c/server_master) to not use an SSL service.
     * Disable any of the SSL modules (including hosting_le) you may have already enabled.
-2. Surf to Administration » Hosting » Experimental » Aegir HTTPS.
+2. Surf to Administration » Hosting » Optional » Aegir HTTPS.
 3. Enable at least one certificate service (e.g. Let's Encrypt or Self-signed).
 4. Enable at least one Web serrver service (e.g. Apache HTTPS or Nginx HTTPS).
 5. Save the configuration.

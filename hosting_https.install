@@ -86,7 +86,8 @@ function hosting_https_uninstall() {
  * Add the client_authentication column with defaults to the database.
  */
 function hosting_https_update_7001() {
-  $field = hosting_https_schema()['hosting_https_site']['fields']['client_authentication'];
+  $field = hosting_https_schema();
+  $field = $field['hosting_https_site']['fields']['client_authentication'];
   db_add_field('hosting_https_site', 'client_authentication', $field);
 
   db_update('hosting_https_site')

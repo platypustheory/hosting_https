@@ -59,6 +59,7 @@ See [the issue queue](https://www.drupal.org/project/issues/hosting_https).
 ## Troubleshooting
 
 If you notice that the certificate generation fails you can check the Aegir 'Verify' task logs for details.
+See also http://docs.aegirproject.org for more generic help.
 
 ### Test the challenge directory
 

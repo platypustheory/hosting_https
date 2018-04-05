@@ -11,6 +11,13 @@ It provides a cleaner, more sustainable and more extensible implementation that 
     * `sudo rm /etc/nginx/sites-enabled/default`
 3. By using the LetsEncrypt submodule you accept the terms of service from [LetsEncrypt](https://acme-v01.api.letsencrypt.org/terms)
 
+## Architecture
+
+This module is build up of several sub-modules that let the user choose between Apache and Nginx, and between certificate services.
+Certificates are generated on the hostmaster server and pushed out to (cluster) slaves.
+For the LetsEncrypt submodule also the well-known/acme-challenge files are synced out to the slave server for validation.
+
+
 ## Installation
 
 1. Cleanup old SSL usage.

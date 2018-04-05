@@ -40,6 +40,12 @@ It provides a cleaner, more sustainable and more extensible implementation that 
 5. Save the form.
 6. Repeat these steps for any other sites for which you'd like to enable HTTPS.
 
+## Upgrading from site specific installation
+
+Since 3.14.0 hosting_https is included in the main Aegir distribution.
+If you installed it earlier in e.g. the sites/example.com/modules then you can get errors when you just remove that old version.
+To avoid these you have to manually fix the paths in /var/aegir/.drush/drushrc.php to point to the profile version of this module. After that you can verify the hostmaster site.
+
 ## Certificate Renewals
 
 For the Let's Encrypt certificate service, this should get done automatically via the Let's Encrypt queue. It will run a Verify task on each site every week as site verification is where certificates get renewed if needed. The seven-day default was chosen to match the CA's [rate limits](https://letsencrypt.org/docs/rate-limits/).

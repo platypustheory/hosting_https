@@ -27,3 +27,14 @@ function hosting_https_hosting_site_context_options(&$task) {
     $task->context_options['https_client_authentication_enabled'] = ($node->https_client_authentication_enabled) ? HOSTING_HTTPS_CLIENT_AUTHENTICATION_ENABLED : 'null';
   }
 }
+
+/**
+ * Implements hook_drush_context_import().
+ */
+function https_drush_context_import($context, &$node) {
+  if ($context->type == 'site') {
+    $node->https_enabled = $context->https_enabled;
+    $node->https_client_authentication_enabled = $context->https_client_authentication_enabled;
+    $node->https_key = $context->https_key;
+  }
+}

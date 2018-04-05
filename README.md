@@ -10,6 +10,7 @@ It provides a cleaner, more sustainable and more extensible implementation that 
 2. If you're running the Nginx Web server and would like to use Let's Encrypt certificates, be sure to prevent Nginx's default configuration from running.  Otherwise, it will prevent this server configuration from allowing access to the challenge directory.
     * `sudo rm /etc/nginx/sites-enabled/default`
 3. By using the LetsEncrypt submodule you accept the terms of service from [LetsEncrypt](https://acme-v01.api.letsencrypt.org/terms)
+4. To get a LetsEncrypt certificate all your site's aliases need to be resolvable in the global DNS.
 
 ## Architecture
 

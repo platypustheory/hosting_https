@@ -9,12 +9,11 @@
 class Provision_Config_Http_Https_Site extends Provision_Config_Http_Site {
   public $template = 'vhost_https.tpl.php';
   public $disabled_template = 'vhost_https_disabled.tpl.php';
+  public $https_cert_ok = TRUE;
 
   public $description = 'encrypted virtual host configuration';
 
   function write() {
-    parent::write();
-
     if ($this->https_enabled && $this->https_key) {
       $path = dirname($this->data['https_cert']);
       // Make sure the ssl.d directory in the server ssl.d exists. 
@@ -25,24 +24,28 @@ class Provision_Config_Http_Https_Site extends Provision_Config_Http_Site {
       )), 0700);
 
       // Copy the certificates to the server's ssl.d directory.
-      provision_file()->copy(
-        $this->data['https_cert_source'],
-        $this->data['https_cert'])
-        || drush_set_error('HTTPS_CERT_COPY_FAIL', dt('failed to copy HTTPS certificate in place'));
-      provision_file()->copy(
-        $this->data['https_cert_key_source'],
-        $this->data['https_cert_key'])
-        || drush_set_error('HTTPS_KEY_COPY_FAIL', dt('failed to copy HTTPS key in place'));
+      if (!provision_file()->copy($this->data['https_cert_source'], $this->data['https_cert'])->status()) {
+        drush_set_error('HTTPS_CERT_COPY_FAIL', dt('failed to copy HTTPS certificate in place'));
+        $this->https_cert_ok = FALSE;
+      }
+      if (!provision_file()->copy($this->data['https_cert_key_source'], $this->data['https_cert_key'])->status()) {
+        drush_set_error('HTTPS_KEY_COPY_FAIL', dt('failed to copy HTTPS key in place'));
+        $this->https_cert_ok = FALSE;
+      }
       // Copy the chain certificate, if it is set.
       if (!empty($this->data['https_chain_cert_source'])) {
-	      provision_file()->copy(
-          $this->data['https_chain_cert_source'],
-          $this->data['https_chain_cert'])
-        || drush_set_error('HTTPS_CHAIN_COPY_FAIL', dt('failed to copy HTTPS certficate chain in place'));
+        if (!provision_file()->copy($this->data['https_chain_cert_source'], $this->data['https_chain_cert'])->status()) {
+          drush_set_error('HTTPS_CHAIN_COPY_FAIL', dt('failed to copy HTTPS certficate chain in place'));
+          $this->https_cert_ok = FALSE;
+        }
       }
       // Sync the key directory to the remote server.
       $this->data['server']->sync($path);
     }
+
+    // Call parent's write AFTER ensuring the certificates are in place to prevent
+    // the vhost from referencing missing files.
+    parent::write();
   }
 
   /**

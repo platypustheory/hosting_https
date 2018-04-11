@@ -1,5 +1,5 @@
 
-<?php if ($this->https_enabled && $this->https_key) : ?>
+<?php if ($this->https_enabled && $this->https_key && $this->https_cert_ok) : ?>
 
 <?php
 $satellite_mode = drush_get_option('satellite_mode');

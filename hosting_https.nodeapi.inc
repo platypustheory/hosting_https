@@ -154,7 +154,7 @@ function hosting_https_site_form_validate($form, $form_state) {
     if (!empty($node->platform)) {
       $platform = node_load($node->platform);
       $server = node_load($platform->web_server);
-      if (!$server->services['http']->https_enabled) {
+      if (!in_array($server->nid, hosting_https_get_servers())) {
         $server_name = strlen($server->human_name) ? $server->human_name : $server->title;
         $server_edit_path = 'node/' . $server->nid . '/edit';
         if (drupal_valid_path($server_edit_path, TRUE)) {

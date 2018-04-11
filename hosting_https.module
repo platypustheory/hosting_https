@@ -40,8 +40,33 @@ function hosting_https_get_servers($access_check = TRUE) {
   $servers = hosting_get_servers('http', $access_check);
   $https_servers = array();
   foreach ($servers as $nid => $title) {
-    $node = node_load($nid);
-    if ($node->services['http']->https_enabled) {
+    $server = node_load($nid);
+    $check_servers = array();
+
+    if ($server->services['http']->type == 'cluster') {
+      foreach ($server->services['http']->web_servers as $inner_nid) {
+        $check_servers[] = node_load($inner_nid);
+      }
+    }
+    elseif ($server->services['http']->type == 'pack') {
+      foreach ($server->services['http']->master_servers as $inner_nid) {
+        $check_servers[] = node_load($inner_nid);
+      }
+      foreach ($server->services['http']->slave_servers as $inner_nid) {
+        $check_servers[] = node_load($inner_nid);
+      }
+    }
+    else {
+      $check_servers[] = $server;
+    }
+
+    $https_available = TRUE;
+    foreach ($check_servers as $node) {
+      // For clusters and packs, HTTPS is only available if *all* of its servers
+      // have HTTPS enabled.
+      $https_available = $https_available && $node->services['http']->https_enabled;
+    }
+    if ($https_available) {
       $https_servers[] = $nid;
     }
   }
@@ -105,9 +130,7 @@ function hosting_https_is_available($site, $check_server_access = TRUE) {
 
   if (isset($site->nid)) {
     $platform = node_load($site->platform);
-    $server = node_load($platform->web_server);
-
-    if ($server->services['http']->https_enabled) {
+    if (in_array($platform->web_server, hosting_https_get_servers($check_server_access))) {
       $https_available = TRUE;
     }
   }

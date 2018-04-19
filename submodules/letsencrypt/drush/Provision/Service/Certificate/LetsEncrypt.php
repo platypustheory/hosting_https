@@ -83,10 +83,8 @@ class Provision_Service_Certificate_LetsEncrypt extends Provision_Service_Certif
     $certs = array();
     $certs['https_cert_key_source'] = "{$source_path}/privkey.pem";
     $certs['https_cert_key'] = "{$target_path}/openssl.key";
-    $certs['https_cert_source'] = "{$source_path}/cert.pem";
+    $certs['https_cert_source'] = "{$source_path}/fullchain.pem";
     $certs['https_cert'] = "{$target_path}/openssl.crt";
-    $certs['https_chain_cert_source'] = "{$source_path}/fullchain.pem";
-    $certs['https_chain_cert'] = "{$target_path}/openssl_chain.crt";
 
     return $certs;
   }

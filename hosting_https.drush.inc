@@ -25,6 +25,7 @@ function hosting_https_hosting_site_context_options(&$task) {
 
   if (isset($node->https_client_authentication_enabled)) {
     $task->context_options['https_client_authentication_enabled'] = ($node->https_client_authentication_enabled) ? HOSTING_HTTPS_CLIENT_AUTHENTICATION_ENABLED : 'null';
+    $task->context_options['https_client_authentication_path'] = ($node->https_client_authentication_path) ? $node->https_client_authentication_path : 'null';
   }
 }
 

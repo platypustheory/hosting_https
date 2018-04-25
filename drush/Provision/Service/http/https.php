@@ -40,6 +40,7 @@ class Provision_Service_http_https extends Provision_Service_http_public {
 
     $this->context->setProperty('https_enabled', 0);
     $this->context->setProperty('https_client_authentication_enabled', 0);
+    $this->context->setProperty('https_client_authentication_path', NULL);
     $this->context->setProperty('https_key', NULL);
   }
 

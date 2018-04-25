@@ -39,6 +39,16 @@ function hosting_https_site_form(&$form, &$form_state, $form_id) {
     '#access' => user_access('manage site HTTPS settings'),
   ), 'filter_xss', $https_available);
 
+  _hosting_site_field($form['hosting_https_wrapper'], $node, 'https_client_authentication_path', array(
+    '#type' => 'textfield',
+    '#title' => t('Client authentication path'),
+    '#description' => t("If you'd rather not have client authentication enabled throughout the site, specify a path here such as <em>/certificate/login</em>. This option will only take effect on Apache; it's not supported on Nginx."),
+    '#default_value' => (isset($node->https_client_authentication_path)) ? $node->https_client_authentication_path : '',
+    '#size' => 60,
+    '#maxlength' => 255,
+    '#access' => user_access('manage site HTTPS settings'),
+  ), 'filter_xss', $https_available);
+
   // Add our custom validate callback.
   $form['#validate'][] = 'hosting_https_site_form_validate';
 }
@@ -75,12 +85,19 @@ function hosting_https_nodeapi_site_view(&$node, $teaser = FALSE) {
     '#weight' => 7,
   );
 
+  $node->content['info']['https_client_authentication_path'] = array(
+    '#type' => 'item',
+    '#title' => t('Client authentication path'),
+    '#markup' => hosting_https_client_authentication_path($node),
+    '#weight' => 8,
+  );
+
   if (isset($node->https_enabled) && $node->https_enabled == TRUE) {
     $node->content['info']['https_key'] = array(
       '#type' => 'item',
       '#title' => t('Encryption key'),
       '#markup' => hosting_https_output_key($node),
-      '#weight' => 8,
+      '#weight' => 9,
     );
   }
 }
@@ -94,6 +111,16 @@ function hosting_https_client_authentication_enabled($node) {
     return TRUE;
   }
   return FALSE;
+}
+
+/**
+ * Fetches the client authentication path.
+ */
+function hosting_https_client_authentication_path($node) {
+  if (empty($node->https_client_authentication_path)) {
+    return t('<em>(global)</em>');
+  }
+  return filter_xss($node->https_client_authentication_path);
 }
 
 /**
@@ -181,6 +208,9 @@ function hosting_https_nodeapi_site_presave(&$node) {
   if (!isset($node->https_client_authentication_enabled)) {
     $node->https_client_authentication_enabled = HOSTING_HTTPS_CLIENT_AUTHENTICATION_DISABLED;
   }
+  if (!isset($node->https_client_authentication_path)) {
+    $node->https_client_authentication_path = '';
+  }
 }
 
 /**
@@ -193,6 +223,7 @@ function hosting_https_nodeapi_site_insert($node) {
       'nid' => $node->nid,
       'https_enabled' => $node->https_enabled,
       'client_authentication' => $node->https_client_authentication_enabled,
+      'client_authentication_path' => $node->https_client_authentication_path,
     ))
     ->execute();
 }
@@ -211,6 +242,7 @@ function hosting_https_nodeapi_site_update($node) {
       ->fields(array(
         'https_enabled' => $node->https_enabled,
         'client_authentication' => $node->https_client_authentication_enabled,
+        'client_authentication_path' => $node->https_client_authentication_path,
       ))
       ->condition('vid', $node->vid)
       ->execute();
@@ -219,21 +251,26 @@ function hosting_https_nodeapi_site_update($node) {
 
 /**
  * Implements hook_node_load().
+ *
+ * @todo For the query, use "SELECT *" instead of concatenating possible fields
+ * together.  Then, check which ones are set.
  */
 function hosting_https_node_load($nodes, $types) {
   // Necessary if run through Drush not fully bootstrapped.
   require_once DRUPAL_ROOT . '/includes/install.inc';
 
   // Handle the case where hostmaster loads itself before DB schema updates run.
-  $client_auth_column = (drupal_get_installed_schema_version('hosting_https') >= 7001) ? ', client_authentication' : '';
+  $client_auth_enabled_column = (drupal_get_installed_schema_version('hosting_https') >= 7001) ? ', client_authentication' : '';
+  $client_auth_path_column = (drupal_get_installed_schema_version('hosting_https') >= 7002) ? ', client_authentication_path' : '';
 
   foreach ($nodes as $nid => $node) {
-    $result = db_query("SELECT https_enabled$client_auth_column FROM {hosting_https_site} WHERE vid = :vid",
+    $result = db_query("SELECT https_enabled$client_auth_enabled_column$client_auth_path_column FROM {hosting_https_site} WHERE vid = :vid",
       array(':vid' => $node->vid)
       )->fetchObject();
     if ($result) {
       $nodes[$nid]->https_enabled = $result->https_enabled;
-      $nodes[$nid]->https_client_authentication_enabled = $client_auth_column ? $result->client_authentication : HOSTING_HTTPS_CLIENT_AUTHENTICATION_DISABLED;
+      $nodes[$nid]->https_client_authentication_enabled = $client_auth_enabled_column ? $result->client_authentication : HOSTING_HTTPS_CLIENT_AUTHENTICATION_DISABLED;
+      $nodes[$nid]->https_client_authentication_path = $client_auth_path_column ? $result->client_authentication_path : '';
       $nodes[$nid]->https_key = hosting_https_get_key($node);
     }
   }

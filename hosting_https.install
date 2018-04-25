@@ -61,6 +61,13 @@ function hosting_https_schema() {
         'size' => 'tiny',
         'description' => 'Whether client authentication is enabled (1) or not (0).',
       ),
+      'client_authentication_path' => array(
+        'description' => 'The client authentication path, if not global.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
     ),
     'primary key' => array('vid', 'nid'),
   );
@@ -86,11 +93,24 @@ function hosting_https_uninstall() {
  * Add the client_authentication column with defaults to the database.
  */
 function hosting_https_update_7001() {
-  $field = hosting_https_schema();
-  $field = $field['hosting_https_site']['fields']['client_authentication'];
+  $schema = hosting_https_schema();
+  $field = $schema['hosting_https_site']['fields']['client_authentication'];
   db_add_field('hosting_https_site', 'client_authentication', $field);
 
   db_update('hosting_https_site')
     ->fields(array('client_authentication' => 0))
+    ->execute();
+}
+
+/**
+ * Add support for enabling client authentication only on a specific path.
+ */
+function hosting_https_update_7002() {
+  $schema = hosting_https_schema();
+  $field = $schema['hosting_https_site']['fields']['client_authentication_path'];
+  db_add_field('hosting_https_site', 'client_authentication_path', $field);
+
+  db_update('hosting_https_site')
+    ->fields(array('client_authentication_path' => ''))
     ->execute();
 }

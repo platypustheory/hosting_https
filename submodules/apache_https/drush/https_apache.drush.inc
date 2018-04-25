@@ -43,9 +43,19 @@ function https_apache_provision_apache_vhost_config($uri, $data) {
   $lines[] = "  ### Aegir HTTPS (hosting_https) ###";
   $lines[] = "  ###################################";
   $lines[] = "  # Enable HTTPS client authentication as per site settings.";
-  $lines[] = "  SSLVerifyCLient optional_no_ca";
+
+  if (!empty(d()->https_client_authentication_path)) {
+    $lines[] = "  <Location '" . strip_tags(d()->https_client_authentication_path) . "'>";
+  }
+
+  $lines[] = "  SSLVerifyClient optional_no_ca";
   $lines[] = "  SSLVerifyDepth 1";
   $lines[] = "  SSLOptions +StdEnvVars +ExportCertData";
+
+  if (!empty(d()->https_client_authentication_path)) {
+    $lines[] = "  </Location>";
+  }
+
   $lines[] = "\n";
   return implode("\n", $lines);
 }

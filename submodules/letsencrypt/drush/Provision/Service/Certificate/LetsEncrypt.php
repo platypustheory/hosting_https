@@ -191,10 +191,13 @@ class Provision_Service_Certificate_LetsEncrypt extends Provision_Service_Certif
 
       // Initialize hooks file.
       provision_file()->copy($source . '/dehydrated-hooks.sh', $this->server->letsencrypt_script_path . '/dehydrated-hooks.sh');
+      provision_file()->chmod($this->server->letsencrypt_script_path . '/dehydrated-hooks.sh', 0755);
 
       if (drush_copy_dir($source . '/dehydrated', $this->server->letsencrypt_script_path . '/dehydrated', FILE_EXISTS_OVERWRITE)) {
         drush_log("Copied Let's Encrypt dehydrated script code into place.", 'success');
       }
+      provision_file()->chmod($this->server->letsencrypt_script_path . '/dehydrated/dehydrated', 0755);
+
       // Symlink the dehydrated code into place.
       provision_file()->symlink($this->server->letsencrypt_script_path . '/dehydrated/dehydrated', $this->server->letsencrypt_script_path . '/script', dt("Create Let's Encrypt dehydrated symlink."), 0644);
 

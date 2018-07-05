@@ -43,6 +43,9 @@ function hosting_letsencrypt_hosting_queues() {
  * The main queue callback for refreshing Let's Encrypt certificates. We simply
  * need to run a Verify task on each applicable site, as certificates get
  * renewed there if they're close to their expiry dates.
+ *
+ * @param int $count
+ *   The maximum number of items to queue.
  */
 function hosting_lets_encrypt_queue($count) {
   foreach (hosting_letsencrypt_get_sites(TRUE, $count) as $site_id) {
@@ -67,6 +70,11 @@ function hosting_lets_encrypt_queue($count) {
  * Fetch HTTPS-enabled site IDs using Let's Encrypt certificates.
  *
  * @todo Ensure sites are using the Let's Encrypt service.
+ *
+ * @param bool $queue_only
+ *   Only return items that have not been verified in the last 4 weeks.
+ * @param int $limit
+ *   The maximum number of items to return.
  */
 function hosting_letsencrypt_get_sites($queue_only = FALSE, $limit = 0) {
   $sites = array();

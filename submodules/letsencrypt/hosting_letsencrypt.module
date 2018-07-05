@@ -23,12 +23,13 @@ function hosting_letsencrypt_hosting_queues() {
   $queues['lets_encrypt'] = array(
     'name' => t("Let's Encrypt"),
     'description' => t("Refresh expiring Let's Encrypt certificates for HTTPS-enabled sites."),
-    'type' => 'batch',
+    'type' => HOSTING_QUEUE_TYPE_SPREAD,
     'frequency' => strtotime("7 days", 0),
     'min_threads' => 1,
-    'max_threads' => 12,
+    'max_threads' => 5,
+    'count' => 5,
     'threshold' => 100,
-    'total_items' => count(hosting_letsencrypt_get_sites()),
+    'total_items' => count(hosting_letsencrypt_get_sites(TRUE)),
     'singular' => t('certificate renewal'),
     'plural' => t('certificate renewals'),
   );
@@ -44,7 +45,8 @@ function hosting_letsencrypt_hosting_queues() {
  * renewed there if they're close to their expiry dates.
  */
 function hosting_lets_encrypt_queue($count) {
-  foreach (hosting_letsencrypt_get_sites() as $site_id) {
+  foreach (hosting_letsencrypt_get_sites(TRUE, $count) as $site_id) {
+    /* @todo Ideally we'd be running this in the backend directly. */
     if ($task = hosting_add_task($site_id, 'verify')) {
       watchdog('hosting_letsencrypt', t('Certificate renewal: Queuing Verify task ID %task for site %site with ID %id', array(
        '%task' => $task->nid,
@@ -66,20 +68,29 @@ function hosting_lets_encrypt_queue($count) {
  *
  * @todo Ensure sites are using the Let's Encrypt service.
  */
-function hosting_letsencrypt_get_sites() {
+function hosting_letsencrypt_get_sites($queue_only = FALSE, $limit = 0) {
   $sites = array();
 
-  if ($result = db_query('SELECT s.nid '
-    . 'FROM {hosting_site} s, {hosting_https_site} h '
-    . 'WHERE s.nid = h.nid '
-    . 'AND h.https_enabled IN(:https) '
-    . 'AND s.status = :enabled', array(
-        ':https' => array(HOSTING_HTTPS_ENABLED, HOSTING_HTTPS_REQUIRED),
-        ':enabled' => HOSTING_SITE_ENABLED,
-  ))) {
-    while ($row = $result->fetch()) {
-      $sites[] = $row->nid;
-    }
+  $https = array(HOSTING_HTTPS_ENABLED, HOSTING_HTTPS_REQUIRED);
+  $enabled = HOSTING_SITE_ENABLED;
+
+  $query = db_select('hosting_site', 's');
+  $query->join('hosting_https_site', 'h', 's.nid = h.nid');
+  $query->fields('s', array('nid'))
+    ->condition('h.https_enabled', $https, 'IN')
+    ->condition('s.status', $enabled)
+    ->orderBy('s.verified', 'ASC');
+  if ($queue_only) {
+    $query->condition('s.verified', time() - (86400 * 7 * 4), '<=');
+  }
+  if ($limit) {
+    $query->range(0, $limit);
+  }
+
+  $result = $query->execute()->fetchAll();
+
+  foreach ($result as $item) {
+    $sites[] = $item->nid;
   }
 
   return $sites;

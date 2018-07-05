@@ -51,17 +51,17 @@ function hosting_lets_encrypt_queue($count) {
   foreach (hosting_letsencrypt_get_sites(TRUE, $count) as $site_id) {
     /* @todo Ideally we'd be running this in the backend directly. */
     if ($task = hosting_add_task($site_id, 'verify')) {
-      watchdog('hosting_letsencrypt', t('Certificate renewal: Queuing Verify task ID %task for site %site with ID %id', array(
+      watchdog('hosting_letsencrypt', 'Certificate renewal: Queuing Verify task ID %task for site %site with ID %id', array(
        '%task' => $task->nid,
        '%site' => node_load($site_id)->title,
        '%id' => $site_id,
-      )));
+      ));
     }
     else {
-      watchdog('hosting_letsencrypt', t('Certificate renewal: Failed to queue Verify task for site %site with ID %id', array(
+      watchdog('hosting_letsencrypt', 'Certificate renewal: Failed to queue Verify task for site %site with ID %id', array(
        '%site' => node_load($site_id)->title,
        '%id' => $site_id,
-      )));
+      ));
     }
   }
 }

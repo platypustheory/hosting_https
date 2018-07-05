@@ -47,6 +47,11 @@ function hosting_https_site_form(&$form, &$form_state, $form_id) {
     '#size' => 60,
     '#maxlength' => 255,
     '#access' => user_access('manage site HTTPS settings'),
+    '#states' => array(
+      'visible' => array(
+        ':input[name="https_client_authentication_enabled"]' => array('checked' => TRUE),
+      ),
+    ),
   ), 'filter_xss', $https_available);
 
   // Add our custom validate callback.
@@ -78,19 +83,22 @@ function hosting_https_nodeapi_site_view(&$node, $teaser = FALSE) {
     '#weight' => 6,
   );
 
+  $is_enabled = hosting_https_client_authentication_enabled($node);
   $node->content['info']['https_client_authentication_enabled'] = array(
     '#type' => 'item',
     '#title' => t('Client authentication'),
-    '#markup' => hosting_https_client_authentication_enabled($node) ? 'Enabled' : 'Disabled',
+    '#markup' => $is_enabled ? 'Enabled' : 'Disabled',
     '#weight' => 7,
   );
 
-  $node->content['info']['https_client_authentication_path'] = array(
-    '#type' => 'item',
-    '#title' => t('Client authentication path'),
-    '#markup' => hosting_https_client_authentication_path($node),
-    '#weight' => 8,
-  );
+  if ($is_enabled) {
+    $node->content['info']['https_client_authentication_path'] = array(
+      '#type' => 'item',
+      '#title' => t('Client authentication path'),
+      '#markup' => hosting_https_client_authentication_path($node),
+      '#weight' => 8,
+    );
+  }
 
   if (isset($node->https_enabled) && $node->https_enabled == TRUE) {
     $node->content['info']['https_key'] = array(

@@ -120,14 +120,17 @@ class Provision_Service_Certificate_LetsEncrypt extends Provision_Service_Certif
     $cmd = "AEGIR_DRUSH_ALIAS={$drush_alias} {$script_path}/script $le_options --config {$script_path}/{$config_file} --out {$config_path} {$domain_list}";
     drush_log("Running: " . $cmd, 'notice');
     $result = drush_shell_exec($cmd);
-    foreach (drush_shell_exec_output() as $line) {
-      drush_log($line);
-    }
     if ($result) {
+      foreach (drush_shell_exec_output() as $line) {
+        drush_log($line);
+      }
       drush_log(dt("Successfully generated Let's Encrypt certificates."), 'success');
     }
     else {
-      drush_log(dt("Failed to generate Let's Encrypt certificates."), 'warning');
+      foreach (drush_shell_exec_output() as $line) {
+        drush_log($line, 'warning');
+      }
+      drush_set_error('HTTPS_CERT_GEN_FAIL', dt('Failed to generate Let\'s Encrypt certificates.'));
     }
   }
 

@@ -103,9 +103,9 @@ class Provision_Service_Certificate_LetsEncrypt extends Provision_Service_Certif
       '%https_key' => $https_key
     )), 0700);
 
-    $config_file = $this->getConfigFile(d()->server->letsencrypt_ca);
-    $script_path = d()->server->letsencrypt_script_path;
-    $config_path = d()->server->letsencrypt_config_path;
+    $config_file = $this->getConfigFile($this->server->letsencrypt_ca);
+    $script_path = $this->server->letsencrypt_script_path;
+    $config_path = $this->server->letsencrypt_config_path;
     $drush_alias = escapeshellarg('@' . d()->uri);
 
     $domain_list = $this->getDomainsString(d());

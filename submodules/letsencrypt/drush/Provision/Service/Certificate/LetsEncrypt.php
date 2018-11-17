@@ -130,7 +130,13 @@ class Provision_Service_Certificate_LetsEncrypt extends Provision_Service_Certif
       foreach (drush_shell_exec_output() as $line) {
         drush_log($line, 'warning');
       }
-      drush_set_error('HTTPS_CERT_GEN_FAIL', dt('Failed to generate Let\'s Encrypt certificates.'));
+
+      if (drush_get_option('hosting_https_fail_task_if_certificate_failes', FALSE)) {
+        drush_set_error('HTTPS_CERT_GEN_FAIL', dt('Failed to generate Let\'s Encrypt certificates.'));
+      }
+      else {
+        drush_log(dt('Failed to generate Let\'s Encrypt certificates.'), 'warning');
+      }
     }
   }
 

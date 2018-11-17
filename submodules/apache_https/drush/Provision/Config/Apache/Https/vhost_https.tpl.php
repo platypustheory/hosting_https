@@ -31,6 +31,7 @@ if (!$aegir_root && $server->aegir_root) {
 
     # Enable SSL handling.
 
+    <?php if (file_exists($https_cert_key)): ?>
     SSLEngine on
 
     SSLCertificateFile <?php print $https_cert; ?>
@@ -39,6 +40,7 @@ if (!$aegir_root && $server->aegir_root) {
 
   <?php if (!empty($https_chain_cert)) : ?>
     SSLCertificateChainFile <?php print $https_chain_cert; ?>
+  <?php endif; ?>
   <?php endif; ?>
 
 <?php

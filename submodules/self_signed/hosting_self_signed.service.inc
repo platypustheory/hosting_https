@@ -83,7 +83,7 @@ class hostingService_Certificate_SelfSigned extends hostingService_Certificate {
   function validate(&$node, &$form, &$form_state) {
     parent::validate($node, $form, $form_state);
 
-    if (sizeof($this->self_signed_field) > 30) {
+    if (strlen($this->self_signed_field) > 30) {
       form_set_error('self_signed_field', t("The certificate string must not be longer than 30 characters"));
     }
   }

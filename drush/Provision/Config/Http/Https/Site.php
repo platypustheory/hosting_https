@@ -14,7 +14,7 @@ class Provision_Config_Http_Https_Site extends Provision_Config_Http_Site {
   public $description = 'encrypted virtual host configuration';
 
   function write() {
-    if ($this->https_enabled && $this->https_key && !drush_get_error() && file_exists($this->data['https_cert_source'])) {
+    if ($this->https_enabled && $this->https_key && !drush_get_error()) {
       $path = dirname($this->data['https_cert']);
       // Make sure the ssl.d directory in the server ssl.d exists. 
       provision_file()->create_dir($path, 

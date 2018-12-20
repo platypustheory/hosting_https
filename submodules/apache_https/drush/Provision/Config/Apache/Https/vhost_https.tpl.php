@@ -1,5 +1,5 @@
 
-<?php if ($this->https_enabled && $this->https_key) : ?>
+<?php if ($this->https_enabled && $this->https_key && $this->https_cert_ok) : ?>
 
   <VirtualHost <?php print "*:{$https_port}"; ?>>
   <?php if ($this->site_mail) : ?>

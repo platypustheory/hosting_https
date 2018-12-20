@@ -25,17 +25,33 @@ class Provision_Config_Http_Https_Site extends Provision_Config_Http_Site {
 
       // Copy the certificates to the server's ssl.d directory.
       if (!provision_file()->copy($this->data['https_cert_source'], $this->data['https_cert'])->status()) {
-        drush_set_error('HTTPS_CERT_COPY_FAIL', dt('failed to copy HTTPS certificate in place'));
+        if (drush_get_option('hosting_https_fail_task_if_certificate_fails', FALSE)) {
+          drush_set_error('HTTPS_CERT_COPY_FAIL', dt('failed to copy HTTPS certificate in place'));
+        }
+        else {
+          drush_log(dt('failed to copy HTTPS certificate in place'), 'warning');
+        }
         $this->https_cert_ok = FALSE;
       }
       if (!provision_file()->copy($this->data['https_cert_key_source'], $this->data['https_cert_key'])->status()) {
-        drush_set_error('HTTPS_KEY_COPY_FAIL', dt('failed to copy HTTPS key in place'));
+
+        if (drush_get_option('hosting_https_fail_task_if_certificate_fails', FALSE)) {
+          drush_set_error('HTTPS_KEY_COPY_FAIL', dt('failed to copy HTTPS key in place'));
+        }
+        else {
+          drush_log(dt('failed to copy HTTPS key in place'), 'warning');
+        }
         $this->https_cert_ok = FALSE;
       }
       // Copy the chain certificate, if it is set.
       if (!empty($this->data['https_chain_cert_source'])) {
         if (!provision_file()->copy($this->data['https_chain_cert_source'], $this->data['https_chain_cert'])->status()) {
-          drush_set_error('HTTPS_CHAIN_COPY_FAIL', dt('failed to copy HTTPS certficate chain in place'));
+          if (drush_get_option('hosting_https_fail_task_if_certificate_fails', FALSE)) {
+            drush_set_error('HTTPS_CHAIN_COPY_FAIL', dt('failed to copy HTTPS certficate chain in place'));
+          }
+          else {
+            drush_log(dt('failed to copy HTTPS certficate chain in place'), 'warning');
+          }
           $this->https_cert_ok = FALSE;
         }
       }

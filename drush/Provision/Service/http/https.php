@@ -69,12 +69,6 @@ class Provision_Service_http_https extends Provision_Service_http_public {
         $certs = $this->server->service('Certificate')->get_certificates($this->context->https_key);
         $data = array_merge($data, $certs);
       }
-
-      // Turn off https and redirection if the cert key is not readable or doesn't exist for some reason.
-      if (!is_readable($data['https_cert_key'])) {
-        $this->context->https_enabled = FALSE;
-        $data['ssl_redirection'] = FALSE;
-      }
     }
 
     return $data;

@@ -39,6 +39,12 @@ class Provision_Config_Http_Https_Site extends Provision_Config_Http_Site {
           $this->https_cert_ok = FALSE;
         }
       }
+
+      // If cert is not ok, turn off ssl_redirection.
+      if ($this->https_cert_ok == FALSE) {
+        $this->data['ssl_redirection'] = FALSE;
+      }
+
       // Sync the key directory to the remote server.
       $this->data['server']->sync($path);
     }

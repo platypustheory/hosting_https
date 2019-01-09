@@ -89,7 +89,7 @@ function hosting_letsencrypt_get_sites($queue_only = FALSE, $limit = 0) {
     ->condition('s.status', $enabled)
     ->orderBy('s.verified', 'ASC');
   if ($queue_only) {
-    $query->condition('s.verified', time() - (86400 * 7 * 4), '<=');
+    $query->condition('s.verified', time() - (86400 * 7 * 2), '<=');
   }
   if ($limit) {
     $query->range(0, $limit);

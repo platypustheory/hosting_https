@@ -13,7 +13,7 @@ function hosting_nginx_https_hosting_feature() {
     'description' => $modules['hosting_nginx_https']->info['description'],
     'status' => HOSTING_FEATURE_DISABLED,
     'module' => 'hosting_nginx_https',
-    'group' => 'experimental',
+    'group' => 'optional',
   );
   return $features;
 }

@@ -13,7 +13,7 @@ function hosting_apache_https_hosting_feature() {
     'description' => $modules['hosting_apache_https']->info['description'],
     'status' => HOSTING_FEATURE_DISABLED,
     'module' => 'hosting_apache_https',
-    'group' => 'experimental',
+    'group' => 'optional',
   );
   return $features;
 }

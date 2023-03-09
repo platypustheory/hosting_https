@@ -59,20 +59,6 @@ function hosting_https_site_form(&$form, &$form_state, $form_id) {
 }
 
 /**
- * Implements hook_hosting_site_options_alter().
- */
-function hosting_https_hosting_site_options_alter(&$return, $node) {
-  // Test if HTTPS has been enabled.
-  if (isset($node->https_enabled) && $node->https_enabled) {
-    // We need to ensure that the return value is properly indexed, otherwise it
-    // gets interpreted as an object by jquery.
-    $return['profile'] = array_values(array_intersect($return['profile'], hosting_https_get_profiles()));
-
-    $return['platform'] = array_values(array_intersect($return['platform'], hosting_https_get_platforms()));
-  }
-}
-
-/**
  * Implements hook_nodeapi_TYPE_OP().
  */
 function hosting_https_nodeapi_site_view(&$node, $teaser = FALSE) {

@@ -156,7 +156,7 @@ function letsencrypt_provision_nginx_vhost_config($uri, $data) {
     $lines[] = "  # Allow access to letsencrypt.org ACME challenges directory.";
     $lines[] = "  location ^~ /.well-known/acme-challenge {";
     $lines[] = "    alias {$challenge_path};";
-    $lines[] = "    try_files \$uri 404;";
+    $lines[] = "    try_files \$uri =404;";
     $lines[] = "  }";
     $lines[] = "\n";
     return implode("\n", $lines);

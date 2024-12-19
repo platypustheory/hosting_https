@@ -2,28 +2,56 @@
 <?php if ($this->https_enabled && $this->https_key && $this->https_cert_ok) : ?>
 
 <?php
+
+// Check if the function is already defined
+if (!function_exists('get_nginx_version')) {
+   // Function to get Nginx version
+   function get_nginx_version() {
+     $output = shell_exec('nginx -v 2>&1');
+     if (preg_match('/nginx\/([0-9]+\.[0-9]+\.[0-9]+)/', $output, $matches)) {
+         return $matches[1];
+     }
+     return null;
+   }
+}
+
+$nginx_version = get_nginx_version();
+
 $satellite_mode = drush_get_option('satellite_mode');
-if (!$satellite_mode && $server->satellite_mode) {
+if (!$satellite_mode && isset($server->satellite_mode)) {
   $satellite_mode = $server->satellite_mode;
 }
 
 $nginx_has_http2 = drush_get_option('nginx_has_http2');
-if (!$nginx_has_http2 && $server->nginx_has_http2) {
+if (!$nginx_has_http2 && isset($server->nginx_has_http2)) {
   $nginx_has_http2 = $server->nginx_has_http2;
 }
 
-if ($nginx_has_http2) {
-  $ssl_args = "ssl http2";
-}
-else {
-  $ssl_args = "ssl";
-}
+if (version_compare($nginx_version, '1.25.0', '>=')) {
+    $ssl_args = "ssl";
+    $listen_on = "listen *:" . $https_port . " " . $ssl_args .";\n";
+    $http2_on = "http2 on;\n";
+    $ssl_on = "";
+    }
+    else{
+        if ($nginx_has_http2) {
+           $ssl_args = "ssl http2";
+           } else {
+             $ssl_args = "ssl";
+           }
+           $listen_on = "listen *:" . $https_port . " " . $ssl_args .";\n";
+           $ssl_on = "ssl on;\n";
+           $http2_on = "";
+    }
+
 ?>
 
 <?php if ($this->redirection): ?>
 <?php foreach ($this->aliases as $alias_url): ?>
 server {
-  listen       <?php print "*:{$https_port} {$ssl_args}"; ?>;
+    <?php print $listen_on ?>
+    <?php print $http2_on ?>
+    <?php print $ssl_on ?>
 <?php
   // if we use redirections, we need to change the redirection
   // target to be the original site URL ($this->uri instead of
@@ -37,7 +65,6 @@ server {
     print "  server_name  {$alias_url};\n";
   }
 ?>
-  ssl                        on;
   ssl_certificate_key        <?php print $https_cert_key; ?>;
 <?php if (!empty($https_chain_cert)) : ?>
   ssl_certificate            <?php print $https_chain_cert; ?>;
@@ -85,7 +112,7 @@ server {
   }
 ?>
   fastcgi_param db_port   <?php print urlencode($db_port); ?>;
-  listen        <?php print "*:{$https_port} {$ssl_args}"; ?>;
+  <?php print $listen_on ?>
   server_name   <?php
     // this is the main vhost, so we need to put the redirection
     // target as the hostname (if it exists) and not the original URL
@@ -103,7 +130,8 @@ server {
       }
     } ?>;
   root          <?php print "{$this->root}"; ?>;
-  ssl                        on;
+  <?php print $ssl_on ?>
+  <?php print $http2_on ?>
   ssl_certificate_key        <?php print $https_cert_key; ?>;
 <?php if (!empty($https_chain_cert)) : ?>
   ssl_certificate            <?php print $https_chain_cert; ?>;
